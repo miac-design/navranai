@@ -11,6 +11,68 @@ import { useRef } from "react";
 const COLS = 18;
 const ROWS = 8;
 
+const transforms = [
+  { from: "hidden", to: "named" },
+  { from: "silent", to: "heard" },
+  { from: "alone", to: "counted" },
+  { from: "invisible", to: "visible" },
+];
+
+function WordSwap({
+  index,
+  from,
+  to,
+  progress,
+}: {
+  index: number;
+  from: string;
+  to: string;
+  progress: MotionValue<number>;
+}) {
+  const start = 0.35 + index * 0.08;
+  const mid = start + 0.05;
+  const end = mid + 0.05;
+
+  const fromOpacity = useTransform(progress, [start, mid], [1, 0]);
+  const fromBlur = useTransform(progress, [start, mid], [0, 8]);
+  const fromFilter = useTransform(fromBlur, (b) => `blur(${b}px)`);
+  const fromY = useTransform(progress, [start, mid], [0, -12]);
+
+  const toOpacity = useTransform(progress, [mid, end], [0, 1]);
+  const toBlur = useTransform(progress, [mid, end], [8, 0]);
+  const toFilter = useTransform(toBlur, (b) => `blur(${b}px)`);
+  const toY = useTransform(progress, [mid, end], [12, 0]);
+
+  return (
+    <div className="relative flex items-baseline justify-between border-b border-ink/15 py-6">
+      <div className="relative h-[1.1em] w-full font-display font-light tracking-tight">
+        <motion.span
+          className="absolute inset-0 text-ink/40 line-through decoration-clay/50 decoration-1"
+          style={{
+            opacity: fromOpacity,
+            filter: fromFilter,
+            y: fromY,
+            fontSize: "clamp(2rem, 5vw, 4.5rem)",
+          }}
+        >
+          {from}
+        </motion.span>
+        <motion.span
+          className="absolute inset-0 italic text-twilight"
+          style={{
+            opacity: toOpacity,
+            filter: toFilter,
+            y: toY,
+            fontSize: "clamp(2rem, 5vw, 4.5rem)",
+          }}
+        >
+          {to}
+        </motion.span>
+      </div>
+    </div>
+  );
+}
+
 function Tile({
   index,
   progress,
@@ -87,6 +149,23 @@ export default function Problem() {
             </span>
           </span>
         </motion.p>
+
+        <div className="mt-24 md:mt-32">
+          <div className="mb-8 font-sans text-[11px] uppercase tracking-[0.3em] text-clay">
+            What we change
+          </div>
+          <div>
+            {transforms.map((t, i) => (
+              <WordSwap
+                key={t.from}
+                index={i}
+                from={t.from}
+                to={t.to}
+                progress={scrollYProgress}
+              />
+            ))}
+          </div>
+        </div>
 
         <div className="relative mt-32 md:mt-40">
           <div

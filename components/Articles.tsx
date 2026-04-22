@@ -78,7 +78,7 @@ export default function Articles() {
           transition={{ duration: 0.8 }}
           className="mb-6 font-sans text-xs uppercase tracking-[0.35em] text-clay"
         >
-          III. Dispatches
+          IV. Dispatches
         </motion.div>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <h2

@@ -21,7 +21,7 @@ export default function Mission() {
           transition={{ duration: 0.8 }}
           className="col-span-12 mb-4 font-sans text-xs uppercase tracking-[0.35em] text-clay md:col-span-12"
         >
-          IV. The mission
+          VI. The mission
         </motion.div>
 
         <div className="col-span-12 md:col-span-7">

@@ -34,6 +34,13 @@ export default function Nav({ variant = "dawn" }: { variant?: "dawn" | "twilight
         <nav className="flex items-center gap-8 font-sans text-[11px] uppercase tracking-[0.3em]">
           <Link
             data-cursor-target
+            href="/#how-its-made"
+            className={`hidden opacity-75 transition-opacity ${hover} hover:opacity-100 md:inline`}
+          >
+            How it works
+          </Link>
+          <Link
+            data-cursor-target
             href="/dispatches"
             className={`opacity-75 transition-opacity ${hover} hover:opacity-100`}
           >

@@ -1,7 +1,9 @@
 import Hero from "@/components/Hero";
 import Problem from "@/components/Problem";
 import WhatWeDo from "@/components/WhatWeDo";
+import HowItsMade from "@/components/HowItsMade";
 import Articles from "@/components/Articles";
+import Constellation from "@/components/Constellation";
 import Mission from "@/components/Mission";
 import BuiltBy from "@/components/BuiltBy";
 import Footer from "@/components/Footer";
@@ -16,7 +18,11 @@ export default function Home() {
       <Hero />
       <Problem />
       <WhatWeDo />
+      <section id="how-its-made">
+        <HowItsMade />
+      </section>
       <Articles />
+      <Constellation />
       <section id="mission">
         <Mission />
       </section>
