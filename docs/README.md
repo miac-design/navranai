@@ -13,9 +13,10 @@ Internal documentation for the Navran platform and its operator tooling
 
 ## Scripts
 
-| File                                                          | Purpose                                                                          |
-| ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| [`scripts/build_distribution.py`](./scripts/build_distribution.py) | Package RedM MVP V3 for distribution — strips API keys and runtime artifacts. |
+The team's distribution packaging script lives at the repo root:
+[`../package_for_distribution.py`](../package_for_distribution.py) — builds
+`RedM_MVP_V3_Distribution.zip`, stripping API keys, databases, and
+runtime artifacts.
 
 ## How to add more docs
 
@@ -28,17 +29,20 @@ Internal documentation for the Navran platform and its operator tooling
 Markdown renders inline on GitHub. PDFs and images are downloadable but also
 display in-browser from the file view.
 
-## A note on repo boundaries
+## A note on repo layout
 
-This `navranai` repo currently hosts:
+This `navranai` repo currently hosts two products side by side:
 
-1. The **Navran awareness site** — Next.js 14 marketing site and dispatch
-   reader (`/app`, `/components`).
-2. **Docs and specs for the RedM Command Center V3** — an adjacent Python /
-   FastAPI product the team is also building (see the docs above).
+1. **RedM Command Center V3** (repo root) — FastAPI backend
+   (`backend/`), single-page dashboard (`design_v3.html`), walkthroughs,
+   and the `package_for_distribution.py` packaging script. The root
+   `README.md` covers this product.
+2. **Navran awareness site** (`app/`, `components/`, `lib/`) —
+   Next.js 14 marketing site + dispatch reader built in this session.
 
-The RedM V3 **code** itself lives outside this repo (local path:
-`E:\Internship\Fully_functional_MVP_V3`). When that code is ready to push
-to GitHub, consider a separate repository (`miac-design/redm-command` or
-similar) rather than merging both products into one. Keeping the specs
-here is fine — they're lightweight and useful as shared context.
+Both products share one `package.json` (Node tooling for Next.js) and one
+Python `backend/requirements.txt`. This is workable short-term but will
+get awkward as each product grows — particularly around CI, deploy
+targets (Vercel for the Next.js app vs. a Python host for FastAPI), and
+lockfile churn. When the time comes, splitting into two repos
+(`navranai-site` and `redm-command`) is the cleaner move.
