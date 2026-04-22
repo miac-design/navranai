@@ -1,0 +1,64 @@
+# ═══════════════════════════════════════════════════════════════════
+# RedM Command Center — Content Rules Configuration
+# ═══════════════════════════════════════════════════════════════════
+# This file is loaded at runtime by the writer, compliance checker,
+# and quality gate agents. Editable from the dashboard via /api/rules.
+
+language_rules:
+  - instead_of: "rescued"
+    use: "identified"
+    reason: "Centers survivor agency — 'rescued' implies the survivor lacked agency"
+    enabled: true
+
+  - instead_of: "child prostitute"
+    use: "child victim of sex trafficking"
+    reason: "Legal and ethical framing — children cannot consent to commercial sex"
+    enabled: true
+
+  - instead_of: "sex slave"
+    use: "survivor of sex trafficking"
+    reason: "Person-first language that avoids dehumanization"
+    enabled: true
+
+  - instead_of: "sold her body"
+    use: "was exploited"
+    reason: "Removes blame from the victim"
+    enabled: true
+
+  - instead_of: "illegal immigrant"
+    use: "undocumented individual"
+    reason: "No human being is 'illegal' — use person-first language"
+    enabled: true
+
+  - instead_of: "the trafficking problem"
+    use: "trafficking affects [center people]"
+    reason: "Center the people impacted, not the abstract problem"
+    enabled: true
+
+content_rules:
+  always_include_hotline: true
+  hotline_number: "1-888-373-7888"
+  befree_text_line: "233733"
+  no_sensationalized_imagery: true
+  must_cite_sources: true
+  weekly_hope_post: true
+  never_identify_survivors: true
+  avoid_racial_profiling_triggers: true
+
+content_mix:
+  order:
+    - reactive
+    - stat
+    - explainer
+    - action
+    - hope
+  posts_per_campaign: 5
+
+post_structure:
+  required_sections:
+    - hook
+    - educate
+    - empower
+    - source
+  max_hashtags: 5
+  min_hashtags: 2

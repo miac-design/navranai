@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedM Command Center</title>
+  <meta name="description" content="AI-powered anti-trafficking content command center for RedM. Generate, review, and publish mission-aligned social media campaigns.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      /* ═══ Mia's Design Guidelines Palette ═══ */
+      --bg: #FAFAF8;
+      --bg-warm: #F5F3EF;
+      --white: #FFFFFF;
+      --card: #FFFFFF;
+      --card-hover: #FDFCFB;
+
+      --border: #E8E5E0;
+      --border-lt: #F0EDEA;
+      --border-active: rgba(173,31,36,0.3);
+
+      --navy: #1B2A4A;
+      --navy-light: #2D4268;
+      --navy-surface: rgba(27,42,74,0.06);
+
+      --red: #AD1F24;
+      --red-light: #C4282E;
+      --red-surface: rgba(173,31,36,0.07);
+
+      --orange: #D4722A;
+      --orange-light: #E0853E;
+      --orange-surface: rgba(212,114,42,0.08);
+
+      --sage: #4A7C59;
+      --sage-surface: rgba(74,124,89,0.08);
+      --slate: #647585;
+      --slate-surface: rgba(100,117,133,0.07);
+
+      --text: #1B2A4A;
+      --text-2: #5A6B83;
+      --text-3: #8B95A5;
+      --text-4: #B8BFC9;
+
+      --sidebar-w: 230px;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --shadow-sm: 0 1px 3px rgba(27,42,74,0.06);
+      --shadow: 0 4px 16px rgba(27,42,74,0.08);
+      --shadow-lg: 0 12px 32px rgba(27,42,74,0.12);
+    }
+
+    /* ═══ DARK MODE ═══ */
+    [data-theme="dark"] {
+      --bg: #0F1419;
+      --bg-warm: #1A1F26;
+      --white: #1E2530;
+      --card: #1E2530;
+      --card-hover: #252D38;
+      --border: #2C3440;
+      --border-lt: #252D38;
+      --border-active: rgba(173,31,36,0.4);
+      --navy-surface: rgba(140,170,220,0.08);
+      --red-surface: rgba(200,80,80,0.12);
+      --orange-surface: rgba(220,140,60,0.12);
+      --sage-surface: rgba(100,180,120,0.12);
+      --slate-surface: rgba(140,170,200,0.1);
+      --text: #E8ECF1;
+      --text-2: #A0AEBF;
+      --text-3: #6B7A8D;
+      --text-4: #3F4D5E;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow: 0 4px 16px rgba(0,0,0,0.3);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.4);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ═══ SVG ICONS ═══ */
+    .icon { width: 18px; height: 18px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-sm { width: 14px; height: 14px; }
+
+    /* ═══ HOTLINE BAR — Always visible red bar ═══ */
+    .hotline-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .hotline-bar a { color: white; text-decoration: none; }
+    .hotline-bar .hotline-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 12px; letter-spacing: 0.5px; }
+    .hotline-bar .hotline-sep { opacity: 0.4; }
+    .hotline-bar .hotline-text { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.8; }
+
+    /* ═══ SIDEBAR ═══ */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      position: fixed; top: 30px; left: 0; bottom: 0;
+      display: flex; flex-direction: column; z-index: 50;
+    }
+    .sidebar-brand { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); }
+    .sidebar-brand h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; color: var(--navy); }
+    [data-theme="dark"] .sidebar-brand h1 { color: var(--text); }
+    .sidebar-brand h1 em { color: var(--red); font-style: normal; }
+    .sidebar-status { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--text-3); font-weight: 500; margin-top: 5px; }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); }
+    .status-dot.live { animation: pulse 2.5s ease infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+    .sidebar-nav { padding: 14px 10px; flex: 1; overflow-y: auto; }
+    .nav-section { margin-bottom: 18px; }
+    .nav-label { font-size: 9px; font-weight: 700; color: var(--text-4); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 12px 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500; color: var(--text-2);
+      cursor: pointer; transition: all 0.15s; margin-bottom: 1px;
+    }
+    .nav-item:hover { background: var(--bg-warm); color: var(--text); }
+    .nav-item.active { background: var(--red-surface); color: var(--red); font-weight: 600; }
+    .nav-badge { margin-left: auto; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; line-height: 1.4; }
+    .badge-count { background: var(--red); color: white; }
+    .badge-info { background: var(--sage-surface); color: var(--sage); }
+
+    /* Awareness Day countdown */
+    .awareness-countdown { margin: 8px 10px 0; padding: 10px 12px; background: var(--orange-surface); border-radius: var(--radius-sm); border-left: 3px solid var(--orange); }
+    .awareness-countdown .ac-label { font-size: 8px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .awareness-countdown .ac-name { font-size: 11px; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .awareness-countdown .ac-days { font-size: 10px; color: var(--text-2); margin-top: 2px; }
+    .awareness-countdown .ac-days strong { color: var(--orange); font-family: 'JetBrains Mono', monospace; }
+
+    .sidebar-footer { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--red-surface); color: var(--red); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .sidebar-user-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .sidebar-user-role { font-size: 10px; color: var(--text-3); }
+
+    /* ═══ MAIN ═══ */
+    .main { margin-left: var(--sidebar-w); margin-top: 30px; flex: 1; padding: 0 32px 60px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* Stagger fade-in animation */
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .stagger-1 { animation-delay: 0.05s; opacity: 0; }
+    .stagger-2 { animation-delay: 0.1s; opacity: 0; }
+    .stagger-3 { animation-delay: 0.15s; opacity: 0; }
+    .stagger-4 { animation-delay: 0.2s; opacity: 0; }
+    .stagger-5 { animation-delay: 0.25s; opacity: 0; }
+
+    /* Skeleton loading */
+    .skeleton { background: linear-gradient(90deg, var(--border-lt) 25%, var(--bg-warm) 50%, var(--border-lt) 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; border-radius: var(--radius-sm); }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ═══ MISSION RIBBON ═══ */
+    .mission-ribbon {
+      background: var(--navy);
+      color: white;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 16px 28px;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mission-label { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px; }
+    .mission-title { font-size: 14px; font-weight: 700; line-height: 1.3; }
+    .mission-sub { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .mission-stats { display: flex; gap: 28px; }
+    .mission-stat { text-align: right; }
+    .ms-value { font-size: 20px; font-weight: 800; font-family: 'JetBrains Mono', monospace; letter-spacing: -1px; color: white; }
+    .ms-label { font-size: 8px; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 1px; }
+
+    /* ═══ PAGE HEADER ═══ */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-top: 22px; }
+    .page-left { display: flex; align-items: baseline; gap: 14px; }
+    .page-title { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+    .page-subtitle { font-size: 12px; color: var(--text-3); font-weight: 500; }
+    .week-label { font-size: 11px; font-weight: 500; color: var(--text-3); background: var(--white); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; }
+
+    /* ═══ BUTTONS ═══ */
+    .btn { padding: 8px 16px; border-radius: var(--radius-sm); border: none; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: var(--red); color: white; }
+    .btn-primary:hover { background: var(--red-light); box-shadow: 0 2px 8px rgba(173,31,36,0.2); transform: translateY(-1px); }
+    .btn-secondary { background: var(--white); color: var(--text-2); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg-warm); color: var(--text); }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-2); }
+    .btn-outline:hover { border-color: var(--text-3); color: var(--text); }
+
+    /* ═══ INPUTS ═══ */
+    .input-group { margin-bottom: 14px; }
+    .input-label { font-size: 10px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: block; }
+    .input-field { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; color: var(--text); background: var(--white); }
+    .input-field:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px var(--red-surface); }
+    textarea.input-field { min-height: 80px; resize: vertical; line-height: 1.5; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    /* ═══ TAGS ═══ */
+    .tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px; display: inline-block; }
+    .tag-red { background: var(--red-surface); color: var(--red); }
+    .tag-navy { background: var(--navy-surface); color: var(--navy); }
+    [data-theme="dark"] .tag-navy { color: var(--text-2); }
+    .tag-orange { background: var(--orange-surface); color: var(--orange); }
+    .tag-sage { background: var(--sage-surface); color: var(--sage); }
+    .tag-slate { background: var(--slate-surface); color: var(--slate); }
+
+    /* ═══ KPIs ═══ */
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .kpi { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; transition: all 0.2s; }
+    .kpi:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+    .kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .kpi-label { font-size: 9px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.8px; }
+    .kpi-icon { color: var(--text-4); }
+    .kpi-value { font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono', monospace; letter-spacing: -1.5px; line-height: 1; margin-bottom: 3px; }
+    .kpi-sub { font-size: 10px; font-weight: 600; }
+
+    /* ═══ SOURCE BANNER ═══ */
+    .source-banner { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--red); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; }
+    .source-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--red-surface); color: var(--red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .source-info { flex: 1; }
+    .source-label { font-size: 9px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .source-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .source-title a { color: var(--red); text-decoration: none; }
+    .source-meta { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+
+    /* ═══ CONTENT MIX TRACKER ═══ */
+    .content-mix { display: flex; gap: 3px; margin-bottom: 18px; border-radius: var(--radius); overflow: hidden; height: 6px; }
+    .cm-seg { height: 100%; transition: width 0.5s ease; }
+
+    /* ═══ WEEK GRID ═══ */
+    .week-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .day-col { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.25s ease; }
+    .day-col:hover { box-shadow: var(--shadow); border-color: var(--border-active); transform: translateY(-3px); }
+    .day-header { padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-lt); background: var(--bg-warm); }
+    .day-name { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text); }
+    .day-date { font-size: 10px; color: var(--text-3); font-weight: 500; }
+
+    /* ═══ Time Picker ═══ */
+    .day-schedule { padding: 6px 14px; display: flex; align-items: center; gap: 6px; background: var(--bg); border-bottom: 1px solid var(--border-lt); }
+    .day-schedule .schedule-icon { color: var(--text-4); }
+    .day-schedule select { border: none; background: transparent; font-size: 10px; font-weight: 600; color: var(--text-2); font-family: 'JetBrains Mono', monospace; cursor: pointer; padding: 2px 0; }
+    .day-schedule select:focus { outline: none; color: var(--red); }
+    .day-schedule .ai-suggest { font-size: 8px; color: var(--sage); font-weight: 600; margin-left: auto; }
+
+    /* ═══ Audience Chip ═══ */
+    .audience-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 3px; font-size: 9px; font-weight: 600; background: var(--navy-surface); color: var(--text-2); margin-right: 4px; }
+    .audience-chip svg { width: 10px; height: 10px; }
+
+    .day-visual { aspect-ratio: 1; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; }
+    .dv-badge { position: absolute; top: 12px; left: 12px; font-size: 8px; font-weight: 700; padding: 3px 10px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .dv-approved { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--sage); color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+    .dv-logo { position: absolute; bottom: 12px; right: 12px; width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; }
+    .dv-stat { font-size: 40px; font-weight: 900; font-family: 'JetBrains Mono', monospace; letter-spacing: -2px; line-height: 1; margin-bottom: 6px; }
+    .dv-title { font-size: 13px; font-weight: 700; line-height: 1.35; margin-bottom: 4px; }
+    .dv-sub { font-size: 10px; line-height: 1.5; opacity: 0.55; }
+    .dv-cta { display: inline-block; margin-top: 8px; padding: 6px 14px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; }
+    .dv-hotline { font-size: 8px; opacity: 0.3; margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+    .dv-src { font-size: 8px; margin-top: 4px; opacity: 0.25; }
+
+    /* AI-generated image placeholder */
+    .dv-image-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.08; }
+    .dv-image-placeholder svg { width: 60px; height: 60px; stroke: currentColor; fill: none; stroke-width: 1; }
+
+    /* AI Badge */
+    .ai-badge { position: absolute; bottom: 12px; left: 12px; display: flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 3px; font-size: 8px; font-weight: 600; background: rgba(0,0,0,0.12); color: rgba(255,255,255,0.7); backdrop-filter: blur(4px); letter-spacing: 0.3px; }
+    .ai-badge-light { background: rgba(27,42,74,0.06); color: var(--text-3); }
+
+    /* ═══ 5 Content Types ═══ */
+    .vis-reactive { background: var(--navy); color: white; border-top: 3px solid var(--red); }
+    .vis-reactive .dv-badge { background: var(--red); color: white; }
+    .vis-reactive .dv-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .vis-reactive .dv-logo { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+    .vis-stat { background: linear-gradient(160deg, #F8F6F2, #F0EDE6); color: var(--navy); }
+    [data-theme="dark"] .vis-stat { background: linear-gradient(160deg, #252D38, #1E2530); color: var(--text); }
+    .vis-stat .dv-badge { background: var(--red-surface); color: var(--red); }
+    .vis-stat .dv-stat { color: var(--red); }
+    .vis-stat .dv-logo { background: var(--red); color: white; }
+
+    .vis-explainer { background: linear-gradient(160deg, #F0F4F8, #E8EDF2); color: var(--navy); }
+    [data-theme="dark"] .vis-explainer { background: linear-gradient(160deg, #1E2938, #1A2230); color: var(--text); }
+    .vis-explainer .dv-badge { background: var(--navy-surface); color: var(--navy); }
+    [data-theme="dark"] .vis-explainer .dv-badge { color: var(--text-2); }
+    .vis-explainer .dv-title { font-size: 12px; line-height: 1.4; }
+    .vis-explainer .dv-sub { opacity: 0.65; font-size: 10px; line-height: 1.7; }
+    .vis-explainer .dv-logo { background: var(--navy); color: white; }
+
+    .vis-action { background: var(--navy); color: white; }
+    .vis-action .dv-badge { background: var(--orange); color: white; }
+    .vis-action .dv-title { font-size: 20px; font-weight: 900; line-height: 1.2; }
+    .vis-action .dv-cta { background: var(--orange); color: white; text-transform: uppercase; letter-spacing: 1px; }
+    .vis-action .dv-logo { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+    .vis-hope { background: linear-gradient(160deg, #FDF8F0, #F9F0E0); color: var(--navy); }
+    [data-theme="dark"] .vis-hope { background: linear-gradient(160deg, #2A2420, #221E18); color: var(--text); }
+    .vis-hope .dv-badge { background: var(--orange-surface); color: var(--orange); }
+    .vis-hope .dv-stat { color: var(--orange); }
+    .vis-hope .dv-logo { background: var(--orange); color: white; }
+
+    /* ═══ Platform Preview Chrome ═══ */
+    .platform-preview { display: flex; gap: 3px; margin-top: 4px; }
+    .pp-tab { font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 3px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+    .pp-tab:hover { opacity: 0.8; }
+    .pp-tab.active-tab { border-color: var(--red); }
+    .pp-ig { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
+    .pp-x { background: var(--text); color: var(--bg); }
+    [data-theme="dark"] .pp-x { background: var(--text-2); color: var(--bg); }
+    .pp-li { background: #0077B5; color: white; }
+    .pp-fb { background: #1877F2; color: white; }
+
+    /* Caption preview */
+    .caption-preview { padding: 8px 14px; border-top: 1px solid var(--border-lt); background: var(--bg); max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .caption-preview.open { max-height: 200px; }
+    .caption-text { font-size: 11px; color: var(--text-2); line-height: 1.5; white-space: pre-line; }
+    .caption-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border-lt); }
+    .char-count { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--text-3); }
+    .char-warn { color: var(--red); }
+
+    .day-footer { padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-lt); }
+    .day-platforms { display: flex; gap: 3px; flex-wrap: wrap; align-items: center; }
+    .dp { font-size: 8px; font-weight: 600; padding: 2px 6px; border-radius: 3px; background: var(--bg-warm); color: var(--text-3); }
+    .day-actions { display: flex; gap: 4px; }
+    .da-btn { padding: 4px 10px; border-radius: 4px; border: none; font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .da-approve { background: var(--sage); color: white; }
+    .da-approve:hover { background: #3D6B4A; transform: scale(1.05); }
+    .da-edit { background: var(--white); color: var(--text-2); border: 1px solid var(--border); }
+    .da-edit:hover { background: var(--bg-warm); }
+    .da-caption { background: transparent; color: var(--text-3); border: 1px solid var(--border); font-size: 9px; }
+    .da-done { background: var(--sage-surface); color: var(--sage); }
+
+    /* ═══ INTEL ═══ */
+    .intel-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 10px; transition: all 0.25s ease; display: flex; align-items: flex-start; gap: 14px; }
+    .intel-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+    .intel-rank { width: 28px; height: 28px; border-radius: 6px; background: var(--bg-warm); color: var(--text-3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .intel-rank.pick { background: var(--red); color: white; }
+    .intel-body { flex: 1; }
+    .intel-source { font-size: 10px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .intel-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 5px; }
+    .intel-meta { font-size: 10px; color: var(--text-3); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .intel-snippet { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 6px; }
+    .relevance-bar { height: 3px; border-radius: 2px; background: var(--border); margin-bottom: 10px; }
+    .relevance-fill { height: 100%; border-radius: 2px; }
+    .urgency-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+    .urgency-critical { background: var(--red-surface); color: var(--red); }
+    .urgency-elevated { background: var(--orange-surface); color: var(--orange); }
+    .urgency-monitor { background: var(--navy-surface); color: var(--navy-light); }
+    [data-theme="dark"] .urgency-monitor { color: var(--text-2); }
+    .intel-rationale { font-size: 10px; color: var(--text-3); font-style: italic; margin-bottom: 10px; }
+    .intel-actions { display: flex; gap: 8px; }
+    .btn-gen { padding: 7px 16px; border-radius: var(--radius-sm); border: 1px solid var(--red); background: var(--red-surface); color: var(--red); font-size: 11px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+    .btn-gen:hover { background: var(--red); color: white; transform: translateY(-1px); }
+
+    /* ═══ IMPACT ═══ */
+    .impact-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+    .impact-metric { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-lt); }
+    .impact-metric:last-child { border-bottom: none; }
+    .impact-label { font-size: 12px; font-weight: 600; min-width: 120px; }
+    .impact-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; margin: 0 14px; }
+    .impact-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+    .impact-val { font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; min-width: 50px; text-align: right; }
+    .chart-placeholder { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+    .chart-bars { display: flex; align-items: flex-end; justify-content: center; gap: 8px; height: 110px; margin: 14px 0; }
+    .chart-bar { width: 30px; border-radius: 3px 3px 0 0; transition: height 0.5s ease; }
+    .chart-label { font-size: 9px; color: var(--text-3); margin-top: 4px; text-align: center; }
+
+    /* ═══ LIBRARY ═══ */
+    .lib-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .lib-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.25s ease; cursor: pointer; }
+    .lib-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+    .lib-visual { aspect-ratio: 1; padding: 18px; display: flex; flex-direction: column; justify-content: flex-end; }
+    .lib-info { padding: 12px 14px; }
+    .lib-date { font-size: 10px; color: var(--text-3); }
+    .lib-title { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; margin: 3px 0 6px; }
+    .lib-stats { display: flex; gap: 10px; }
+    .lib-stat { font-size: 10px; color: var(--text-3); }
+    .lib-stat strong { color: var(--text); font-weight: 700; }
+
+    /* ═══ RULES ═══ */
+    .compliance-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; margin-bottom: 12px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .compliance-score { font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .compliance-bar { flex: 1; max-width: 180px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 14px; }
+    .compliance-fill { height: 100%; border-radius: 2px; background: var(--sage); }
+
+    .rules-tier { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; }
+    .tier-header { padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-lt); }
+    .tier-title { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .tier-severity { font-size: 9px; font-weight: 600; }
+    .tier-count { font-size: 10px; color: var(--text-3); }
+    .rule-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border-lt); transition: background 0.1s; }
+    .rule-item:last-child { border-bottom: none; }
+    .rule-item:hover { background: var(--bg-warm); }
+    .rule-marker { width: 4px; height: 4px; border-radius: 50%; margin-top: 7px; flex-shrink: 0; }
+    .rule-text { flex: 1; }
+    .rule-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .rule-desc { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+    .rule-toggle { width: 34px; height: 20px; border-radius: 10px; background: var(--sage); position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+    .rule-toggle::after { content: ''; width: 16px; height: 16px; border-radius: 50%; background: white; position: absolute; top: 2px; right: 2px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .rule-toggle.off { background: var(--text-4); }
+    .rule-toggle.off::after { right: auto; left: 2px; }
+    .rule-toggle.locked { opacity: 0.5; cursor: not-allowed; }
+
+    /* ═══ CARDS ═══ */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; }
+    .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .card-desc { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+
+    .social-card { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 8px; transition: all 0.2s; }
+    .social-card:hover { box-shadow: var(--shadow-sm); }
+    .social-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .social-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .social-handle { font-size: 11px; color: var(--text-3); }
+    .social-status { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 4px; }
+
+    .team-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-lt); }
+    .team-row:last-child { border-bottom: none; }
+    .team-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+    .setting-section { margin-bottom: 24px; }
+    .setting-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--border-lt); }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .setting-desc { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+    .setting-control select, .setting-control input { padding: 6px 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; font-family: inherit; background: var(--white); color: var(--text); }
+
+    /* ═══ QUALITY TOOLTIP ═══ */
+    .q-badge { position: relative; cursor: help; font-size: 9px; padding: 2px 7px; border-radius: 3px; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--sage); border: 1px solid rgba(74,124,89,0.2); }
+    .q-tooltip { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; min-width: 240px; box-shadow: var(--shadow-lg); z-index: 100; text-align: left; }
+    .q-badge:hover .q-tooltip { display: block; }
+    .q-tooltip-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 8px; font-family: 'Inter', sans-serif; }
+    .q-criterion { display: flex; align-items: center; justify-content: space-between; padding: 3px 0; font-size: 11px; font-family: 'Inter', sans-serif; }
+    .q-criterion-label { color: var(--text-2); }
+    .q-criterion-score { font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+    .q-note { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-lt); font-size: 10px; color: var(--orange); line-height: 1.5; font-family: 'Inter', sans-serif; }
+
+    /* ═══ ACTIVITY ═══ */
+    .activity-panel { position: fixed; bottom: 16px; right: 16px; z-index: 60; width: 320px; max-height: 380px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; }
+    .activity-panel.collapsed { max-height: 40px; overflow: hidden; }
+    .activity-header { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--border-lt); flex-shrink: 0; }
+    .activity-title { font-size: 11px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 7px; }
+    .activity-toggle { font-size: 12px; color: var(--text-3); transition: transform 0.2s; }
+    .activity-panel.collapsed .activity-toggle { transform: rotate(180deg); }
+    .activity-body { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .activity-item { padding: 8px 14px; display: flex; gap: 8px; align-items: flex-start; font-size: 11px; line-height: 1.5; }
+    .activity-item:hover { background: var(--bg-warm); }
+    .act-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .activity-text { flex: 1; color: var(--text-2); }
+    .activity-text strong { color: var(--text); font-weight: 600; }
+    .activity-time { font-size: 9px; color: var(--text-4); margin-top: 1px; }
+
+    /* ═══ TOAST / OVERLAY ═══ */
+    #toast { position: fixed; bottom: 70px; right: 24px; z-index: 999; display: none; padding: 12px 20px; border-radius: 6px; font-size: 12px; font-weight: 600; font-family: inherit; box-shadow: var(--shadow-lg); color: white; max-width: 360px; transition: opacity 0.3s ease; }
+    #gen-overlay { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(27,42,74,0.3); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* ═══ ONBOARDING OVERLAY ═══ */
+    .onboarding-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(27,42,74,0.5); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+    .onboarding-overlay.show { display: flex; }
+    .onboarding-card { background: var(--white); border-radius: 16px; padding: 40px; max-width: 520px; width: 90%; box-shadow: var(--shadow-lg); text-align: center; }
+    .ob-step { display: none; }
+    .ob-step.active { display: block; }
+    .ob-icon { width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+    .ob-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .ob-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 24px; }
+    .ob-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 20px; }
+    .ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+    .ob-dot.active { background: var(--red); width: 24px; border-radius: 4px; }
+    .ob-actions { display: flex; gap: 10px; justify-content: center; }
+
+    /* ═══ CONFETTI ═══ */
+    .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 300; overflow: hidden; }
+    .confetti-piece { position: absolute; top: -10px; width: 10px; height: 10px; opacity: 0; }
+
+    /* ═══ KEYBOARD SHORTCUT FOOTER ═══ */
+    .shortcut-bar { position: fixed; bottom: 0; left: var(--sidebar-w); right: 0; background: var(--bg-warm); border-top: 1px solid var(--border); padding: 4px 20px; display: flex; align-items: center; gap: 16px; z-index: 40; }
+    .shortcut-item { font-size: 9px; color: var(--text-3); display: flex; align-items: center; gap: 4px; }
+    .shortcut-key { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; background: var(--white); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; color: var(--text-2); }
+
+    /* ═══ POWERED BY FOOTER ═══ */
+    .powered-footer { text-align: center; padding: 20px 0 10px; font-size: 10px; color: var(--text-4); }
+    .powered-footer a { color: var(--text-3); text-decoration: none; }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 1100px) { .week-grid, .lib-grid { grid-template-columns: repeat(2, 1fr); } .kpis { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 800px) { .sidebar { display: none; } .main { margin-left: 0; padding: 0 16px 40px; } .week-grid, .lib-grid { grid-template-columns: 1fr; } .mission-stats { display: none; } .activity-panel { display: none; } .shortcut-bar { left: 0; display: none; } .hotline-bar { font-size: 10px; } }
+
+    /* ═══ CAROUSEL MODAL ═══ */
+    .carousel-overlay{position:fixed;inset:0;z-index:300;background:rgba(27,42,74,0.6);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s ease;}
+    .carousel-overlay.show{display:flex;opacity:1;}
+    .carousel-container{position:relative;width:90%;max-width:720px;display:flex;flex-direction:column;align-items:center;gap:20px;}
+    .carousel-close{position:absolute;top:-40px;right:0;background:none;border:none;color:rgba(255,255,255,0.8);font-size:28px;cursor:pointer;transition:color 0.2s;}
+    .carousel-close:hover{color:#fff;}
+    .carousel-card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.35);width:100%;animation:carouselIn 0.35s ease;}
+    @keyframes carouselIn{from{opacity:0;transform:scale(0.95) translateY(12px);}to{opacity:1;transform:scale(1) translateY(0);}}
+    .carousel-image{position:relative;width:100%;height:380px;overflow:hidden;background:var(--navy);}
+    .carousel-image img{width:100%;height:100%;object-fit:cover;}
+    .carousel-image .dv-image-placeholder{display:flex;align-items:center;justify-content:center;height:100%;}
+    .carousel-image .dv-image-placeholder svg{width:64px;height:64px;stroke:rgba(255,255,255,0.3);stroke-width:1;fill:none;}
+    .carousel-badge-row{position:absolute;top:16px;left:16px;display:flex;gap:8px;align-items:center;}
+    .carousel-badge{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#fff;}
+    .carousel-badge.cb-reactive{background:var(--red);}
+    .carousel-badge.cb-stat{background:var(--orange);}
+    .carousel-badge.cb-explainer{background:var(--navy-light);}
+    .carousel-badge.cb-action{background:var(--red-dark,#6b1d2a);}
+    .carousel-badge.cb-hope{background:var(--sage);}
+    .carousel-score{position:absolute;top:16px;right:16px;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);color:#fff;padding:6px 12px;border-radius:8px;font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+    .carousel-body{padding:24px 28px 20px;}
+    .carousel-day{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+    .carousel-headline{font-size:18px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:12px;}
+    .carousel-caption{font-size:13px;color:var(--text-2);line-height:1.7;max-height:140px;overflow-y:auto;white-space:pre-line;margin-bottom:16px;padding-right:8px;}
+    .carousel-caption::-webkit-scrollbar{width:4px;}
+    .carousel-caption::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+    .carousel-meta-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+    .carousel-meta-chip{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:600;}
+    .cmc-compliant{background:var(--sage-surface);color:var(--sage);}
+    .cmc-flag{background:var(--red-surface);color:var(--red);}
+    .cmc-platform{background:var(--bg-warm);color:var(--text-2);}
+    .carousel-actions{display:flex;gap:10px;border-top:1px solid var(--border);padding-top:16px;}
+    .carousel-actions .btn{flex:1;text-align:center;font-size:12px;padding:10px 0;font-weight:600;}
+    .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.2);color:#fff;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:22px;transition:all 0.2s;}
+    .carousel-nav:hover{background:rgba(255,255,255,0.3);}
+    .carousel-nav.cn-prev{left:-70px;}
+    .carousel-nav.cn-next{right:-70px;}
+    .carousel-nav.disabled{opacity:0.2;pointer-events:none;}
+    .carousel-dots{display:flex;gap:8px;align-items:center;}
+    .carousel-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.3s;}
+    .carousel-dot.active{background:#fff;transform:scale(1.3);}
+    .carousel-counter{color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+  </style>
+</head>
+<body>
+  <!-- HOTLINE BAR — P0: Persistent, always visible -->
+  <div class="hotline-bar" id="hotline-bar">
+    <span>National Human Trafficking Hotline</span>
+    <span class="hotline-sep">|</span>
+    <a href="tel:18883737888" class="hotline-num">1-888-373-7888</a>
+    <span class="hotline-sep">|</span>
+    <span class="hotline-text">Text BEFREE to 233733</span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand"><h1><em>red</em>M Command</h1><div class="sidebar-status"><span class="status-dot live"></span>System Online</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section"><div class="nav-label">Workspace</div>
+        <div class="nav-item active" onclick="showView('calendar',this)" id="nav-calendar"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="2" x2="9" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/></svg>Content Calendar<span class="nav-badge badge-count">5</span></div>
+        <div class="nav-item" onclick="showView('intel',this)" id="nav-intel"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 010 8.49"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M7.76 16.24a6 6 0 010-8.49"/><path d="M4.93 19.07a10 10 0 010-14.14"/></svg>Intelligence<span class="nav-badge badge-info">3</span></div>
+        <div class="nav-item" onclick="showView('impact',this)" id="nav-impact"><svg class="icon" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Impact Tracker</div>
+        <div class="nav-item" onclick="showView('library',this)" id="nav-library"><svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Content Library</div>
+      </div>
+      <div class="nav-section"><div class="nav-label">Configure</div>
+
+        <div class="nav-item" onclick="showView('rules',this)" id="nav-rules"><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Content Rules</div>
+        <div class="nav-item" onclick="showView('social',this)"><svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>Social Accounts</div>
+        <div class="nav-item" onclick="showView('team',this)"><svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team<span class="nav-badge" style="background:var(--orange-surface);color:var(--orange);">2</span></div>
+      </div>
+      <div class="nav-section"><div class="nav-label">System</div>
+        <div class="nav-item" onclick="showView('settings',this)"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</div>
+
+      </div>
+
+      <!-- P3: Awareness Day Countdown -->
+      <div class="awareness-countdown" id="awareness-countdown">
+        <div class="ac-label">Next Awareness Day</div>
+        <div class="ac-name" id="ac-name">World Day Against Trafficking</div>
+        <div class="ac-days"><strong id="ac-days">104</strong> days — auto-campaign ready</div>
+      </div>
+    </nav>
+    <div class="sidebar-footer"><div class="sidebar-avatar">SM</div><div><div class="sidebar-user-name">Sarah M.</div><div class="sidebar-user-role">Content Volunteer</div></div></div>
+  </aside>
+
+  <div class="main">
+    <div class="mission-ribbon"><div><div class="mission-label">This Week's Mission</div><div class="mission-title" id="mission-campaign">DOJ Charges 12 in Multi-State Labor Trafficking Ring</div><div class="mission-sub" id="mission-meta">Reuters · Verified · Campaign active</div></div><div class="mission-stats"><div class="mission-stat"><div class="ms-value">24.5K</div><div class="ms-label">Reached</div></div><div class="mission-stat"><div class="ms-value" style="color:#FFA07A;">847</div><div class="ms-label">Hotline Clicks</div></div><div class="mission-stat"><div class="ms-value">5/5</div><div class="ms-label">Posts Ready</div></div><div class="mission-stat"><div class="ms-value" style="color:var(--orange-light);">14d</div><div class="ms-label">Streak</div></div></div></div>
+
+    <!-- CALENDAR -->
+    <div class="view active" id="view-calendar">
+      <div class="page-header"><div class="page-left"><h2 class="page-title">Content Calendar</h2><span class="week-label">Apr 21 – 25, 2026</span></div><div style="display:flex;gap:8px;"><button class="btn btn-outline" onclick="translateCampaign()" title="Translate campaign"><svg class="icon icon-sm" viewBox="0 0 24 24" style="stroke:currentColor;fill:none;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></button><button class="btn btn-outline" onclick="downloadCampaign()" title="Download bundle"><svg class="icon icon-sm" viewBox="0 0 24 24" style="stroke:currentColor;fill:none;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button><button class="btn btn-primary" id="btn-approve-all" onclick="approveAll()">Approve All</button></div></div>
+      <div class="source-banner"><div class="source-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 010 8.49"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg></div><div class="source-info"><div class="source-label">Campaign generated from</div><div class="source-title"><a href="#">DOJ Announces Charges Against 12 in Multi-State Labor Trafficking Ring</a></div><div class="source-meta">Reuters · Scanned 2 hours ago · AI confidence: High</div></div><button class="btn btn-outline" onclick="showView('intel',document.querySelectorAll('.nav-item')[1])">Pick Different Story</button></div>
+      
+      <div class="week-grid" id="week-grid">
+        <!-- MON: Reactive/Breaking -->
+        <div class="day-col fade-in stagger-1">
+          <div class="day-header"><span class="day-name">Mon</span><span class="day-date">Apr 21</span></div>
+          <div class="day-schedule"><svg class="icon icon-sm schedule-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select><option>10:00 AM</option><option>11:00 AM</option><option selected>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>5:00 PM</option></select><span class="ai-suggest">AI: 12 PM CT</span></div>
+          <div class="day-visual vis-reactive">
+            <div class="dv-image-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <span class="dv-badge">Breaking</span>
+            <div class="q-badge" style="position:absolute;top:12px;right:12px;">8.4<div class="q-tooltip"><div class="q-tooltip-title">Quality Score: 8.4 / 10</div><div class="q-criterion"><span class="q-criterion-label">Emotional impact</span><span class="q-criterion-score" style="color:var(--sage);">9</span></div><div class="q-criterion"><span class="q-criterion-label">Factual accuracy</span><span class="q-criterion-score" style="color:var(--sage);">8</span></div><div class="q-criterion"><span class="q-criterion-label">Hotline included</span><span class="q-criterion-score" style="color:var(--sage);">Yes</span></div><div class="q-criterion"><span class="q-criterion-label">Readability</span><span class="q-criterion-score" style="color:var(--orange);">7</span></div><div class="q-criterion"><span class="q-criterion-label">Compliance</span><span class="q-criterion-score" style="color:var(--sage);">Pass</span></div><div class="q-note">Consider shortening for mobile readers</div></div></div>
+            <div class="dv-title">FEDERAL PROSECUTORS INDICT 12 IN MAJOR TRAFFICKING OPERATION</div>
+            <div class="dv-sub">Multi-state labor trafficking ring dismantled by DOJ.</div>
+            <div class="dv-src">Source: Reuters · Verified</div>
+            <span class="ai-badge">AI-Generated · Human-Approved</span>
+            <div class="dv-logo">rM</div>
+          </div>
+          <div class="caption-preview" id="cap-0">
+            <div class="caption-text">BREAKING: Federal prosecutors have indicted 12 individuals in a multi-state labor trafficking operation spanning TX, GA, and FL.
+
+200+ agricultural workers were exploited. This is why we fight.
+
+If you see something, say something.
+1-888-373-7888
+
+#EndHumanTrafficking #RedM</div>
+            <div class="caption-meta"><span class="audience-chip"><svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>General Public</span><span class="char-count">IG: 287/2200 · X: 287/280 <span class="char-warn">!</span></span></div>
+          </div>
+          <div class="day-footer">
+            <div class="day-platforms">
+              <span class="pp-tab pp-ig active-tab">IG</span><span class="pp-tab pp-x">X</span>
+              <span class="dp" style="background:var(--sage-surface);color:var(--sage);">Compliant</span>
+            </div>
+            <div class="day-actions"><button class="da-btn da-caption" onclick="toggleCaption(0)">Caption</button><button class="da-btn da-approve" onclick="approvePost(0)">Approve</button><button class="da-btn da-edit" onclick="editPost(0)">Edit</button></div>
+          </div>
+        </div>
+
+        <!-- TUE: Stat Card -->
+        <div class="day-col fade-in stagger-2">
+          <div class="day-header"><span class="day-name">Tue</span><span class="day-date">Apr 22</span></div>
+          <div class="day-schedule"><svg class="icon icon-sm schedule-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select><option selected>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option></select><span class="ai-suggest">AI: 10 AM CT</span></div>
+          <div class="day-visual vis-stat">
+            <div class="dv-image-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <span class="dv-badge">Stat Card</span>
+            <div class="q-badge" style="position:absolute;top:12px;right:12px;">9.1</div>
+            <div class="dv-stat">200+</div>
+            <div class="dv-title">Workers exploited in trafficking ring spanning 3 states</div>
+            <div class="dv-src">Source: U.S. Dept. of Justice</div>
+            <span class="ai-badge ai-badge-light">AI-Generated · Human-Approved</span>
+            <div class="dv-logo">rM</div>
+          </div>
+          <div class="caption-preview" id="cap-1">
+            <div class="caption-text">200+ workers. 3 states. 12 indicted.
+
+This isn't a movie. This is labor trafficking happening across America right now.
+
+Source: U.S. Department of Justice
+
+Know the signs. Report what you see.
+1-888-373-7888
+
+#HumanTrafficking #LaborTrafficking</div>
+            <div class="caption-meta"><span class="audience-chip"><svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>Educators</span><span class="char-count">IG: 241/2200 · X: 241/280</span></div>
+          </div>
+          <div class="day-footer">
+            <div class="day-platforms"><span class="pp-tab pp-ig active-tab">IG</span><span class="pp-tab pp-x">X</span><span class="pp-tab pp-li">LI</span></div>
+            <div class="day-actions"><button class="da-btn da-caption" onclick="toggleCaption(1)">Caption</button><button class="da-btn da-approve" onclick="approvePost(1)">Approve</button><button class="da-btn da-edit" onclick="editPost(1)">Edit</button></div>
+          </div>
+        </div>
+
+        <!-- WED: Explainer -->
+        <div class="day-col fade-in stagger-3">
+          <div class="day-header"><span class="day-name">Wed</span><span class="day-date">Apr 23</span></div>
+          <div class="day-schedule"><svg class="icon icon-sm schedule-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select><option>10:00 AM</option><option selected>11:00 AM</option><option>12:00 PM</option></select><span class="ai-suggest">AI: 11 AM CT</span></div>
+          <div class="day-visual vis-explainer">
+            <div class="dv-image-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <span class="dv-badge">Explainer</span>
+            <div class="dv-approved">✓</div>
+            <div class="dv-title">5 Signs of Labor Trafficking in Your Community</div>
+            <div class="dv-sub">1. Workers living on-site<br>2. Pay withheld for "housing"<br>3. Unable to speak freely<br>4. Confiscated IDs<br>5. Excessive worksite security</div>
+            <span class="ai-badge ai-badge-light">AI-Generated · Human-Approved</span>
+            <div class="dv-logo">rM</div>
+          </div>
+          <div class="caption-preview" id="cap-2">
+            <div class="caption-text">Would you recognize labor trafficking in your neighborhood?
+
+Here are 5 signs to watch for:
+1. Workers living at their worksite
+2. Wages withheld for "housing" or "transportation"
+3. Workers unable to speak freely or move around
+4. Confiscated identification documents
+5. Excessive security at job sites
+
+If something feels wrong, trust your instincts.
+1-888-373-7888 | Text BEFREE to 233733
+
+#KnowTheSigns #EndTrafficking</div>
+            <div class="caption-meta"><span class="audience-chip"><svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Parents</span><span class="char-count">IG: 412/2200 · X: 280/280</span></div>
+          </div>
+          <div class="day-footer">
+            <div class="day-platforms"><span class="pp-tab pp-ig active-tab">IG</span><span class="pp-tab pp-fb">FB</span><span class="pp-tab pp-li">LI</span></div>
+            <div class="day-actions"><button class="da-btn da-caption" onclick="toggleCaption(2)">Caption</button><button class="da-btn da-done">Approved</button></div>
+          </div>
+        </div>
+
+        <!-- THU: Action -->
+        <div class="day-col fade-in stagger-4">
+          <div class="day-header"><span class="day-name">Thu</span><span class="day-date">Apr 24</span></div>
+          <div class="day-schedule"><svg class="icon icon-sm schedule-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select><option>10:00 AM</option><option>12:00 PM</option><option selected>5:00 PM</option></select><span class="ai-suggest">AI: 5 PM CT</span></div>
+          <div class="day-visual vis-action">
+            <div class="dv-image-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <span class="dv-badge">Action</span>
+            <div class="dv-approved">✓</div>
+            <div class="dv-title">See something?<br>Say something.</div>
+            <div class="dv-sub">One call can change everything.</div>
+            <div class="dv-cta">TEXT BEFREE → 233733</div>
+            <span class="ai-badge">AI-Generated · Human-Approved</span>
+            <div class="dv-logo">rM</div>
+          </div>
+          <div class="caption-preview" id="cap-3">
+            <div class="caption-text">You don't need to be an expert to make a difference.
+
+If you see something that doesn't seem right — a worker who can't leave, someone who seems afraid — one call can change everything.
+
+National Human Trafficking Hotline:
+1-888-373-7888
+Text BEFREE to 233733
+
+#SaySomething #EndTrafficking #RedM</div>
+            <div class="caption-meta"><span class="audience-chip"><svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>College Students</span><span class="char-count">IG: 348/2200 · X: 280/280</span></div>
+          </div>
+          <div class="day-footer">
+            <div class="day-platforms"><span class="pp-tab pp-ig active-tab">IG</span><span class="pp-tab pp-x">X</span><span class="pp-tab pp-fb">FB</span></div>
+            <div class="day-actions"><button class="da-btn da-caption" onclick="toggleCaption(3)">Caption</button><button class="da-btn da-done">Approved</button></div>
+          </div>
+        </div>
+
+        <!-- FRI: Hope -->
+        <div class="day-col fade-in stagger-5">
+          <div class="day-header"><span class="day-name">Fri</span><span class="day-date">Apr 25</span></div>
+          <div class="day-schedule"><svg class="icon icon-sm schedule-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select><option>9:00 AM</option><option selected>10:00 AM</option><option>11:00 AM</option></select><span class="ai-suggest">AI: 10 AM CT</span></div>
+          <div class="day-visual vis-hope">
+            <div class="dv-image-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <span class="dv-badge">Hope</span>
+            <div class="dv-approved">✓</div>
+            <div class="dv-stat">82K+</div>
+            <div class="dv-title">Survivors identified through the Hotline since 2007</div>
+            <div class="dv-sub">Every call, every tip matters.</div>
+            <div class="dv-src">Source: Polaris Project, 2025</div>
+            <span class="ai-badge ai-badge-light">AI-Generated · Human-Approved</span>
+            <div class="dv-logo">rM</div>
+          </div>
+          <div class="caption-preview" id="cap-4">
+            <div class="caption-text">82,000+ survivors and counting.
+
+Every single one of those lives was touched because someone picked up the phone. Someone saw something. Someone spoke up.
+
+Since 2007, the National Human Trafficking Hotline has connected survivors with resources and help.
+
+Be the reason the number keeps growing.
+1-888-373-7888
+
+Source: Polaris Project
+#Hope #EndTrafficking #RedM</div>
+            <div class="caption-meta"><span class="audience-chip"><svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2;"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>General Public</span><span class="char-count">IG: 367/2200 · X: 280/280</span></div>
+          </div>
+          <div class="day-footer">
+            <div class="day-platforms"><span class="pp-tab pp-ig active-tab">IG</span><span class="pp-tab pp-li">LI</span></div>
+            <div class="day-actions"><button class="da-btn da-caption" onclick="toggleCaption(4)">Caption</button><button class="da-btn da-done">Approved</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Powered by footer -->
+      <div class="powered-footer">AI-Generated Content · Human-Approved · Powered by <a href="#">Austin AI Hub</a></div>
+    </div>
+
+    <!-- INTELLIGENCE -->
+    <div class="view" id="view-intel">
+      <div class="page-header"><div class="page-left"><h2 class="page-title">Intelligence Feed</h2><span class="page-subtitle">AI-scanned anti-trafficking news</span></div><button class="btn btn-primary" onclick="scanNow()">Scan Now</button></div>
+
+      <div class="kpis" style="grid-template-columns:repeat(3,1fr);"><div class="kpi fade-in stagger-1"><div class="kpi-top"><span class="kpi-label">Last Scan</span></div><div class="kpi-value" style="font-size:16px;color:var(--sage);">8 min ago</div><div class="kpi-sub" style="color:var(--text-3);">Auto: Every 6 hours</div></div><div class="kpi fade-in stagger-2"><div class="kpi-top"><span class="kpi-label">Sources</span></div><div class="kpi-value" style="font-size:16px;color:var(--navy);">12</div><div class="kpi-sub" style="color:var(--text-3);">Reuters, AP, Polaris, DOJ…</div></div><div class="kpi fade-in stagger-3"><div class="kpi-top"><span class="kpi-label">Stories This Week</span></div><div class="kpi-value" style="font-size:16px;color:var(--orange);">7</div><div class="kpi-sub" style="color:var(--sage);">↑ 3 vs last week</div></div></div>
+      <!-- Manual URL Override -->
+      <div id="manual-url-card" class="card fade-in" style="margin-bottom:14px;padding:16px 20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--text-3);flex-shrink:0;"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          <span style="font-size:11px;font-weight:600;color:var(--text-2);">Manual URL Override</span>
+          <span style="font-size:10px;color:var(--text-3);margin-left:auto;">Paste any article URL to generate a campaign directly</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input id="manual-url-input" class="input-field" type="url" placeholder="https://reuters.com/article/..." style="flex:1;margin:0;font-size:12px;height:38px;"/>
+          <button class="btn btn-primary" onclick="genFromManualUrl()" style="white-space:nowrap;height:38px;">Generate from URL</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- IMPACT -->
+    <div class="view" id="view-impact">
+      <div class="page-header"><div class="page-left"><h2 class="page-title">Impact Tracker</h2><span class="page-subtitle">Measuring what matters</span></div><div style="display:flex;gap:6px;"><button class="btn btn-secondary">This Week</button><button class="btn btn-outline">Month</button><button class="btn btn-outline">All Time</button></div></div>
+      <div class="kpis"><div class="kpi fade-in stagger-1"><div class="kpi-top"><span class="kpi-label">Total Reach</span></div><div class="kpi-value" style="color:var(--navy);">24.5K</div><div class="kpi-sub" style="color:var(--sage);">↑ 32%</div></div><div class="kpi fade-in stagger-2"><div class="kpi-top"><span class="kpi-label">Engagement</span></div><div class="kpi-value" style="color:var(--sage);">8.2%</div><div class="kpi-sub" style="color:var(--sage);">↑ 1.4%</div></div><div class="kpi fade-in stagger-3"><div class="kpi-top"><span class="kpi-label">Hotline Clicks</span></div><div class="kpi-value" style="color:var(--red);">847</div><div class="kpi-sub" style="color:var(--sage);">↑ 28%</div></div><div class="kpi fade-in stagger-4"><div class="kpi-top"><span class="kpi-label">Total AI Cost</span></div><div class="kpi-value" id="total-cost" style="color:var(--orange);">$0.00</div><div class="kpi-sub" style="color:var(--text-3);">lifetime spend</div></div></div>
+      <div class="grid-2">
+        <div class="impact-card fade-in stagger-1"><div class="card-title">Performance by Type</div><div class="impact-metric"><span class="impact-label"><span class="tag tag-orange">Hope</span></span><div class="impact-bar-track"><div class="impact-bar-fill" style="width:90%;background:var(--orange);"></div></div><span class="impact-val" style="color:var(--orange);">10.2%</span></div><div class="impact-metric"><span class="impact-label"><span class="tag tag-red">Stat Card</span></span><div class="impact-bar-track"><div class="impact-bar-fill" style="width:82%;background:var(--red);"></div></div><span class="impact-val" style="color:var(--red);">9.1%</span></div><div class="impact-metric"><span class="impact-label"><span class="tag tag-orange">Action</span></span><div class="impact-bar-track"><div class="impact-bar-fill" style="width:75%;background:var(--orange);"></div></div><span class="impact-val" style="color:var(--orange);">7.8%</span></div><div class="impact-metric"><span class="impact-label"><span class="tag tag-navy">Explainer</span></span><div class="impact-bar-track"><div class="impact-bar-fill" style="width:68%;background:var(--navy);"></div></div><span class="impact-val" style="color:var(--navy);">6.9%</span></div><div class="impact-metric"><span class="impact-label"><span class="tag tag-slate">Reactive</span></span><div class="impact-bar-track"><div class="impact-bar-fill" style="width:60%;background:var(--slate);"></div></div><span class="impact-val" style="color:var(--slate);">5.8%</span></div></div>
+        <div class="chart-placeholder fade-in stagger-2"><div class="card-title">Weekly Reach</div><div class="chart-bars"><div><div class="chart-bar" style="height:35px;background:var(--border);"></div><div class="chart-label">W1</div></div><div><div class="chart-bar" style="height:50px;background:var(--border);"></div><div class="chart-label">W2</div></div><div><div class="chart-bar" style="height:42px;background:var(--border);"></div><div class="chart-label">W3</div></div><div><div class="chart-bar" style="height:66px;background:var(--border);"></div><div class="chart-label">W4</div></div><div><div class="chart-bar" style="height:58px;background:var(--border);"></div><div class="chart-label">W5</div></div><div><div class="chart-bar" style="height:95px;background:var(--red-surface);border:1.5px solid var(--red);"></div><div class="chart-label" style="color:var(--red);font-weight:700;">Now</div></div></div><div style="font-size:10px;color:var(--text-3);">24.5K — highest in 6 weeks</div></div>
+      </div>
+      <!-- Weekly Email Preview -->
+      <div class="card fade-in stagger-3" style="margin-top:14px;">
+        <div class="card-title">Weekly Summary Email Preview</div>
+        <div style="background:var(--bg-warm);border-radius:var(--radius-sm);padding:16px;margin-top:8px;">
+          <div style="font-size:10px;color:var(--text-3);margin-bottom:8px;">TO: karina@social-kraft.com, david@redm.org</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;">RedM Weekly Impact Report — Apr 21-25, 2026</div>
+          <div style="font-size:11px;color:var(--text-2);line-height:1.6;">This week's campaign: "DOJ Charges 12 in Multi-State Labor Trafficking Ring" generated <strong>24.5K reach</strong> across 5 posts with <strong>847 hotline clicks</strong>. Top performer: Hope post (10.2% engagement). Compliance: <span style="color:var(--sage);font-weight:600;">98%</span> — 1 auto-fix applied.</div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text-3);">Auto-sent every Friday at 5 PM CT · <a href="#" style="color:var(--red);text-decoration:none;">Configure</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="view" id="view-library"><div class="page-header"><div class="page-left"><h2 class="page-title">Content Library</h2><span class="page-subtitle">42 posts generated</span></div></div><div class="lib-grid"><div class="lib-card"><div class="lib-visual vis-stat"><span class="dv-badge">Stat Card</span><div class="dv-stat" style="font-size:28px;">200+</div><div class="dv-title" style="font-size:10px;">Workers exploited</div><div class="dv-logo">rM</div></div><div class="lib-info"><div class="lib-date">Apr 22 · Published</div><div class="lib-title">200+ Workers in 3-State Ring</div><div class="lib-stats"><span class="lib-stat"><strong>8.4K</strong> reach</span><span class="lib-stat"><strong>9.1%</strong> eng.</span></div></div></div><div class="lib-card"><div class="lib-visual vis-action"><span class="dv-badge">Action</span><div class="dv-title" style="font-size:12px;">See something?<br>Say something.</div><div class="dv-cta" style="font-size:8px;margin-top:4px;">BEFREE → 233733</div><div class="dv-logo">rM</div></div><div class="lib-info"><div class="lib-date">Apr 17 · Published</div><div class="lib-title">Hotline CTA</div><div class="lib-stats"><span class="lib-stat"><strong>6.1K</strong></span><span class="lib-stat"><strong>12.1%</strong></span></div></div></div><div class="lib-card"><div class="lib-visual vis-hope"><span class="dv-badge">Hope</span><div class="dv-stat" style="font-size:28px;">82K+</div><div class="dv-title" style="font-size:10px;">Survivors identified</div><div class="dv-logo">rM</div></div><div class="lib-info"><div class="lib-date">Apr 18 · Published</div><div class="lib-title">Polaris Milestone</div><div class="lib-stats"><span class="lib-stat"><strong>5.2K</strong></span><span class="lib-stat"><strong>10.2%</strong></span></div></div></div><div class="lib-card"><div class="lib-visual vis-explainer"><span class="dv-badge">Explainer</span><div class="dv-title" style="font-size:10px;">3 Myths About Trafficking</div><div class="dv-logo">rM</div></div><div class="lib-info"><div class="lib-date">Apr 10 · Published</div><div class="lib-title">Myth-Busting Carousel</div><div class="lib-stats"><span class="lib-stat"><strong>4.8K</strong></span><span class="lib-stat"><strong>6.9%</strong></span></div></div></div></div></div>
+
+    <!-- RULES -->
+    <div class="view" id="view-rules"><div class="page-header"><div class="page-left"><h2 class="page-title">Content Rules</h2><span class="page-subtitle">Ethical guardrails and brand compliance</span></div><button class="btn btn-primary" onclick="saveRules()">Save Rules</button></div><div class="compliance-header"><div><div style="font-size:9px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Campaign Compliance</div><div class="compliance-score" style="color:var(--sage);">98%</div></div><div class="compliance-bar"><div class="compliance-fill" style="width:98%;"></div></div><div style="font-size:10px;color:var(--text-2);">1 auto-fix applied · 0 violations</div></div><div class="rules-tier"><div class="tier-header"><div class="tier-title"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Legal & Compliance<span class="tier-severity" style="color:var(--red);">Cannot disable</span></div><div class="tier-count">2 rules</div></div><div class="rule-item"><div class="rule-marker" style="background:var(--red);"></div><div class="rule-text"><div class="rule-title">Never identify survivors by name or image</div><div class="rule-desc">Protect survivor privacy. Use aggregated data, anonymized stories, or spokesperson quotes only.</div></div><div class="rule-toggle locked"></div></div><div class="rule-item"><div class="rule-marker" style="background:var(--red);"></div><div class="rule-text"><div class="rule-title">All statistics must cite a source</div><div class="rule-desc">Every number or claim must have visible source attribution.</div></div><div class="rule-toggle locked"></div></div></div><div class="rules-tier"><div class="tier-header"><div class="tier-title"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>Ethical Language<span class="tier-severity" style="color:var(--orange);">Strongly recommended</span></div><div class="tier-count">3 rules</div></div><div class="rule-item"><div class="rule-marker" style="background:var(--orange);"></div><div class="rule-text"><div class="rule-title">Never use "rescued" — use "identified" or "supported"</div><div class="rule-desc">"Rescued" implies the survivor lacked agency. Ethical framing centers the survivor's experience.</div></div><div class="rule-toggle"></div></div><div class="rule-item"><div class="rule-marker" style="background:var(--orange);"></div><div class="rule-text"><div class="rule-title">Always include National Hotline number</div><div class="rule-desc">Every post must include 1-888-373-7888 or BeFree (233733).</div></div><div class="rule-toggle"></div></div><div class="rule-item"><div class="rule-marker" style="background:var(--orange);"></div><div class="rule-text"><div class="rule-title">Avoid racial profiling triggers</div><div class="rule-desc">Frame signs as observable conditions, not judgments about communities.</div></div><div class="rule-toggle"></div></div></div><div class="rules-tier"><div class="tier-header"><div class="tier-title"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33"/></svg>Brand Voice<span class="tier-severity" style="color:var(--text-3);">Customizable</span></div><div class="tier-count">2 rules</div></div><div class="rule-item"><div class="rule-marker" style="background:var(--text-3);"></div><div class="rule-text"><div class="rule-title">No sensationalized imagery</div><div class="rule-desc">Never use chains, bound hands, or dark silhouettes. Use abstract graphics and typography.</div></div><div class="rule-toggle"></div></div><div class="rule-item"><div class="rule-marker" style="background:var(--text-3);"></div><div class="rule-text"><div class="rule-title">At least 1 Hope post per week</div><div class="rule-desc">Prevents compassion fatigue. Positive progress retains audience 23% better.</div></div><div class="rule-toggle"></div></div></div></div>
+
+    <!-- SOCIAL / TEAM / SETTINGS / HELP — same as before with minor enhancements -->
+
+    <div class="view" id="view-social"><div class="page-header"><div class="page-left"><h2 class="page-title">Social Accounts</h2></div><button class="btn btn-primary">Connect Account</button></div><div class="social-card"><div class="social-icon" style="background:var(--red-surface);color:var(--red);">IG</div><div class="social-info"><div class="social-name">Instagram</div><div class="social-handle">@redmmovement · 2,847 followers</div></div><span class="social-status" style="background:var(--sage-surface);color:var(--sage);">Connected</span></div><div class="social-card"><div class="social-icon" style="background:var(--navy-surface);color:var(--text-2);">X</div><div class="social-info"><div class="social-name">X / Twitter</div><div class="social-handle">@redmmovement · 1,203 followers</div></div><span class="social-status" style="background:var(--sage-surface);color:var(--sage);">Connected</span></div><div class="social-card"><div class="social-icon" style="background:var(--navy-surface);color:var(--text-2);">LI</div><div class="social-info"><div class="social-name">LinkedIn</div><div class="social-handle">RedM Organization · 894 followers</div></div><span class="social-status" style="background:var(--sage-surface);color:var(--sage);">Connected</span></div><div class="social-card"><div class="social-icon" style="background:var(--bg-warm);color:var(--text-3);">FB</div><div class="social-info"><div class="social-name">Facebook</div><div class="social-handle">Not connected</div></div><span class="social-status" style="background:var(--bg-warm);color:var(--text-3);">Connect →</span></div></div>
+
+    <div class="view" id="view-team"><div class="page-header"><div class="page-left"><h2 class="page-title">Team</h2><span class="page-subtitle">3 volunteers</span></div><button class="btn btn-primary">Invite</button></div><div class="card"><div class="team-row"><div class="team-avatar" style="background:var(--red-surface);color:var(--red);">SM</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">Sarah Mitchell <span style="font-size:10px;color:var(--text-3);">(you)</span></div><div style="font-size:10px;color:var(--text-3);">sarah@redm.org</div></div><span class="tag tag-red">Creator</span></div><div class="team-row"><div class="team-avatar" style="background:var(--navy-surface);color:var(--text-2);">JC</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">James Chen</div><div style="font-size:10px;color:var(--text-3);">james@outreach-hub.com</div></div><span class="tag tag-sage">Reviewer</span></div><div class="team-row"><div class="team-avatar" style="background:var(--orange-surface);color:var(--orange);">LP</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">Laura Patel</div><div style="font-size:10px;color:var(--text-3);">laura@redm.org</div></div><span class="tag tag-orange">Admin</span></div></div></div>
+
+    <div class="view" id="view-settings"><div class="page-header"><div class="page-left"><h2 class="page-title">Settings</h2></div><button class="btn btn-primary" onclick="saveSettings()">Save</button></div><div class="card"><div class="setting-section"><div class="setting-title">Appearance</div><div class="setting-row"><div><div class="setting-label">Theme</div><div class="setting-desc">Switch between light and dark mode</div></div><div class="setting-control"><select id="theme-select" onchange="toggleTheme(this.value)"><option value="light" selected>Light (Mia Default)</option><option value="dark">Dark</option></select></div></div></div><div class="setting-section"><div class="setting-title">Intelligence</div><div class="setting-row"><div><div class="setting-label">Scan Frequency</div><div class="setting-desc">How often the AI scans</div></div><div class="setting-control"><select><option>Every 6 hours</option><option>Every 12 hours</option><option>Daily</option><option>Manual only</option></select></div></div><div class="setting-row"><div><div class="setting-label">Source Priority</div></div><div class="setting-control"><select><option>DOJ + Reuters first</option><option>Polaris + NGOs first</option><option>All equal</option></select></div></div></div><div class="setting-section"><div class="setting-title">Generation</div><div class="setting-row"><div><div class="setting-label">Posts Per Campaign</div></div><div class="setting-control"><select><option>5 (full week)</option><option>3 (compact)</option></select></div></div><div class="setting-row"><div><div class="setting-label">Default Platforms</div></div><div class="setting-control"><select><option>IG + X + LI + FB</option><option>IG + X only</option></select></div></div></div><div class="setting-section"><div class="setting-title">API Keys</div><div class="setting-row"><div><div class="setting-label">OpenAI Key</div></div><div class="setting-control"><input type="password" value="sk-••••••••" style="width:180px;"/></div></div><div class="setting-row"><div><div class="setting-label">Exa Key</div></div><div class="setting-control"><input type="password" value="exa-••••••" style="width:180px;"/></div></div></div></div></div>
+
+
+
+  </div>
+
+  <!-- ACTIVITY -->
+  <div class="activity-panel" id="activity-panel"><div class="activity-header" onclick="toggleActivity()"><div class="activity-title"><span class="status-dot live"></span>Activity</div><span class="activity-toggle">▾</span></div><div class="activity-body" id="activity-body"><div class="activity-item"><div class="act-dot" style="background:var(--sage);"></div><div><div class="activity-text"><strong>System</strong> connected V3.0.0</div><div class="activity-time">Just now</div></div></div><div class="activity-item"><div class="act-dot" style="background:var(--sage);"></div><div><div class="activity-text"><strong>Sarah</strong> approved Explainer post</div><div class="activity-time">2 min ago</div></div></div><div class="activity-item"><div class="act-dot" style="background:var(--sage);"></div><div><div class="activity-text"><strong>Sarah</strong> approved Action post</div><div class="activity-time">3 min ago</div></div></div><div class="activity-item"><div class="act-dot" style="background:var(--sage);"></div><div><div class="activity-text"><strong>Sarah</strong> approved Hope post</div><div class="activity-time">3 min ago</div></div></div><div class="activity-item"><div class="act-dot" style="background:var(--red);"></div><div><div class="activity-text"><strong>AI</strong> generated 5 posts — quality avg: <span style="color:var(--sage);">8.4</span></div><div class="activity-time">14 min ago</div></div></div><div class="activity-item"><div class="act-dot" style="background:var(--navy);"></div><div><div class="activity-text"><strong>Auto-scan</strong> found 3 new stories</div><div class="activity-time">45 min ago</div></div></div><div class="activity-item"><div class="act-dot" style="background:var(--orange);"></div><div><div class="activity-text">Compliance: <em>"rescued"</em> in Explainer — <span style="color:var(--sage);">auto-fixed</span></div><div class="activity-time">1 hour ago</div></div></div></div></div>
+
+  <!-- KEYBOARD SHORTCUT BAR -->
+  <div class="shortcut-bar" id="shortcut-bar">
+    <div class="shortcut-item"><span class="shortcut-key">J</span>/<span class="shortcut-key">K</span> Navigate</div>
+    <div class="shortcut-item"><span class="shortcut-key">A</span> Approve</div>
+    <div class="shortcut-item"><span class="shortcut-key">E</span> Edit</div>
+    <div class="shortcut-item"><span class="shortcut-key">C</span> Caption</div>
+    <div class="shortcut-item"><span class="shortcut-key">1</span>-<span class="shortcut-key">5</span> Jump to Day</div>
+    <div class="shortcut-item"><span class="shortcut-key">?</span> All Shortcuts</div>
+  </div>
+
+  <!-- ONBOARDING OVERLAY -->
+  <div class="onboarding-overlay" id="onboarding">
+    <div class="onboarding-card">
+      <div class="ob-step active" id="ob-1">
+        <div class="ob-icon" style="background:var(--red-surface);"><svg class="icon" viewBox="0 0 24 24" style="width:32px;height:32px;color:var(--red);"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 010 8.49"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M7.76 16.24a6 6 0 010-8.49"/><path d="M4.93 19.07a10 10 0 010-14.14"/></svg></div>
+        <div class="ob-title">Welcome to RedM Command</div>
+        <div class="ob-desc">Your AI-powered anti-trafficking content command center. Generate ethical, mission-aligned social media campaigns in minutes — not hours.</div>
+        <div class="ob-dots"><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <div class="ob-actions"><button class="btn btn-outline" onclick="dismissOnboarding()">Skip</button><button class="btn btn-primary" onclick="nextOnboardingStep(2)">Get Started →</button></div>
+      </div>
+      <div class="ob-step" id="ob-2">
+        <div class="ob-icon" style="background:var(--navy-surface);"><svg class="icon" viewBox="0 0 24 24" style="width:32px;height:32px;color:var(--navy);"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div class="ob-title">Scan → Generate → Approve</div>
+        <div class="ob-desc">AI scans 12+ trusted sources for breaking anti-trafficking news. Pick a story, generate a full 5-post campaign, then approve each post with one click.</div>
+        <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
+        <div class="ob-actions"><button class="btn btn-outline" onclick="nextOnboardingStep(1)">← Back</button><button class="btn btn-primary" onclick="nextOnboardingStep(3)">Next →</button></div>
+      </div>
+      <div class="ob-step" id="ob-3">
+        <div class="ob-icon" style="background:var(--sage-surface);"><svg class="icon" viewBox="0 0 24 24" style="width:32px;height:32px;color:var(--sage);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="ob-title">Ethical Guardrails Built In</div>
+        <div class="ob-desc">Every post is checked against content rules — survivor privacy, ethical language, source attribution — automatically. You always have final approval.</div>
+        <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div></div>
+        <div class="ob-actions"><button class="btn btn-outline" onclick="nextOnboardingStep(2)">← Back</button><button class="btn btn-primary" onclick="dismissOnboarding()">Start Using Command Center</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <div id="gen-overlay"><div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:36px;text-align:center;max-width:400px;box-shadow:var(--shadow-lg);"><div id="gen-spinner" style="font-size:36px;margin-bottom:14px;animation:spin 2s linear infinite;color:var(--red);">⟳</div><div id="gen-title" style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">Generating Campaign</div><div id="gen-status" style="font-size:12px;color:var(--text-2);line-height:1.6;">Running pipeline: trend → audience → 5 posts → quality → compliance → images</div><div style="margin-top:18px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;"><div id="gen-bar" style="height:100%;background:var(--red);border-radius:2px;width:0%;transition:width 1s ease;"></div></div><div id="gen-step" style="font-size:10px;color:var(--text-3);margin-top:6px;">Initializing…</div></div></div>
+
+  <!-- Confetti container -->
+  <div class="confetti-container" id="confetti-container"></div>
+
+  <script>
+    const API='http://localhost:8000';let currentCampaignId=null;let currentCampaignPosts=[];let selectedDayIndex=0;
+
+    // ═══ TOAST ═══
+    function toast(m,t='info'){const e=document.getElementById('toast');const c={info:'var(--navy)',success:'var(--sage)',error:'var(--red)',warning:'var(--orange)'};e.style.background=c[t]||c.info;e.textContent=m;e.style.display='block';e.style.opacity='1';setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.style.display='none',300);},3500);}
+
+    // ═══ ACTIVITY ═══
+    function toggleActivity(){document.getElementById('activity-panel').classList.toggle('collapsed');}
+    function addActivity(color,html){const b=document.getElementById('activity-body');const i=document.createElement('div');i.className='activity-item';i.innerHTML=`<div class="act-dot" style="background:${color};"></div><div><div class="activity-text">${html}</div><div class="activity-time">Just now</div></div>`;b.insertBefore(i,b.firstChild);}
+
+    // ═══ VIEW SWITCHING ═══
+    function showView(id,el){
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      const t=document.getElementById('view-'+id);
+      if(t){t.classList.add('active');t.classList.remove('fade-in');void t.offsetWidth;t.classList.add('fade-in');}
+      if(el)el.classList.add('active');
+      if(id==='intel')loadIntel();if(id==='library')loadLibrary();if(id==='rules')loadRules();if(id==='settings')loadSettings();if(id==='impact')loadCosts();
+    }
+
+    // ═══ CAPTION TOGGLE ═══
+    function toggleCaption(i){
+      const cap=document.getElementById('cap-'+i);
+      if(cap)cap.classList.toggle('open');
+    }
+
+    // ═══ DARK MODE ═══
+    function toggleTheme(t){
+      document.documentElement.setAttribute('data-theme',t);
+      localStorage.setItem('redm-theme',t);
+    }
+
+    // ═══ ONBOARDING ═══
+    function nextOnboardingStep(n){
+      document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+      document.getElementById('ob-'+n).classList.add('active');
+    }
+    function dismissOnboarding(){
+      document.getElementById('onboarding').classList.remove('show');
+      localStorage.setItem('redm-onboarded','true');
+    }
+
+    // ═══ CONFETTI ═══
+    function fireConfetti(){
+      const container=document.getElementById('confetti-container');
+      const colors=['#AD1F24','#1B2A4A','#D4722A','#4A7C59','#E0853E'];
+      for(let i=0;i<60;i++){
+        const piece=document.createElement('div');
+        piece.className='confetti-piece';
+        piece.style.left=Math.random()*100+'%';
+        piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+        piece.style.width=(Math.random()*8+4)+'px';
+        piece.style.height=(Math.random()*8+4)+'px';
+        piece.style.borderRadius=Math.random()>0.5?'50%':'2px';
+        piece.style.opacity='1';
+        const duration=Math.random()*2+1.5;
+        piece.style.animation=`confettiFall ${duration}s ease-out forwards`;
+        piece.style.animationDelay=(Math.random()*0.5)+'s';
+        container.appendChild(piece);
+      }
+      setTimeout(()=>container.innerHTML='',4000);
+    }
+
+    // ═══ AWARENESS DAY COUNTDOWN ═══
+    function updateAwarenessCountdown(){
+      const now=new Date();
+      const days=[
+        {name:'World Day Against Trafficking in Persons',date:new Date(now.getFullYear(),6,30)},
+        {name:'National Human Trafficking Awareness Day',date:new Date(now.getFullYear()+1,0,11)},
+        {name:'National Slavery & Human Trafficking Prevention Month',date:new Date(now.getFullYear()+1,0,1)},
+      ];
+      let next=null;let minDiff=Infinity;
+      days.forEach(d=>{
+        if(d.date<now)d.date.setFullYear(d.date.getFullYear()+1);
+        const diff=Math.ceil((d.date-now)/(1000*60*60*24));
+        if(diff<minDiff&&diff>0){minDiff=diff;next=d;}
+      });
+      if(next){
+        document.getElementById('ac-name').textContent=next.name;
+        document.getElementById('ac-days').textContent=minDiff;
+      }
+    }
+
+    // ═══ KEYBOARD SHORTCUTS ═══
+    document.addEventListener('keydown',e=>{
+      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+      const dayCols=document.querySelectorAll('#week-grid .day-col');
+      switch(e.key.toLowerCase()){
+        case 'j':selectedDayIndex=Math.min(selectedDayIndex+1,dayCols.length-1);highlightDay(dayCols);break;
+        case 'k':selectedDayIndex=Math.max(selectedDayIndex-1,0);highlightDay(dayCols);break;
+        case 'a':approvePost(selectedDayIndex);break;
+        case 'e':editPost(selectedDayIndex);break;
+        case 'c':toggleCaption(selectedDayIndex);break;
+        case '1':case '2':case '3':case '4':case '5':
+          selectedDayIndex=parseInt(e.key)-1;highlightDay(dayCols);break;
+      }
+    });
+    function highlightDay(cols){
+      cols.forEach((c,i)=>{
+        c.style.outline=i===selectedDayIndex?'2px solid var(--red)':'none';
+        c.style.outlineOffset=i===selectedDayIndex?'2px':'0';
+      });
+    }
+
+    // ═══ RULES API ═══
+    async function loadRules(){
+      try{
+        const r=await fetch(`${API}/api/rules`);
+        const d=await r.json();
+        if(d.rules){
+          addActivity('var(--navy)','<strong>System</strong> loaded content rules');
+        }
+      }catch(e){}
+    }
+    async function saveRules(){
+      try{
+        // Collect toggle states from the UI
+        const toggles=document.querySelectorAll('#view-rules .rule-toggle:not(.locked)');
+        const ruleStates={};
+        toggles.forEach((t,i)=>{ ruleStates[`rule_${i}`]=!t.classList.contains('off'); });
+        await fetch(`${API}/api/rules`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({rules:ruleStates})});
+        toast('Rules saved','success');
+        addActivity('var(--sage)','<strong>Sarah</strong> updated content rules');
+      }catch(e){toast('Failed to save rules','error');}
+    }
+
+    // ═══ SETTINGS API ═══
+    async function loadSettings(){
+      try{
+        const r=await fetch(`${API}/api/settings`);
+        const d=await r.json();
+        if(d.settings){
+          // Populate settings form from API data
+          addActivity('var(--navy)','<strong>System</strong> loaded settings');
+        }
+      }catch(e){}
+    }
+    async function saveSettings(){
+      const settings={
+        scan_frequency_hours:document.querySelector('#view-settings select')?.value||'Every 6 hours',
+        theme:document.getElementById('theme-select')?.value||'light',
+      };
+      try{
+        await fetch(`${API}/api/settings`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({settings})});
+        toast('Settings saved','success');
+        addActivity('var(--sage)','<strong>Sarah</strong> updated settings');
+      }catch(e){toast('Failed to save','error');}
+    }
+
+    // ═══ AUDIT TRAIL API ═══
+    async function loadAuditTrail(){
+      try{
+        const r=await fetch(`${API}/api/audit`);
+        const d=await r.json();
+        if(d.entries&&d.entries.length>0){
+          const body=document.getElementById('activity-body');
+          d.entries.slice(0,15).forEach(entry=>{
+            const colors={campaign_started:'var(--red)',campaign_generated:'var(--sage)',post_approved:'var(--sage)',post_edited:'var(--orange)',batch_approved:'var(--sage)',rules_updated:'var(--navy)'};
+            const item=document.createElement('div');
+            item.className='activity-item';
+            item.innerHTML=`<div class="act-dot" style="background:${colors[entry.action]||'var(--navy)'};"></div><div><div class="activity-text"><strong>${entry.action.replace(/_/g,' ')}</strong>${entry.campaign_id?' · '+entry.campaign_id.slice(0,6):''}</div><div class="activity-time">${entry.timestamp?new Date(entry.timestamp).toLocaleString():''}</div></div>`;
+            body.appendChild(item);
+          });
+        }
+      }catch(e){}
+    }
+
+    // ═══ COSTS API ═══
+    async function loadCosts(){
+      try{
+        const r=await fetch(`${API}/api/costs`);
+        const d=await r.json();
+        const el=document.getElementById('total-cost');
+        if(el&&d.total_usd!==undefined){
+          el.textContent='$'+d.total_usd.toFixed(2);
+        }
+      }catch(e){}
+    }
+
+    // ═══ TRANSLATE API ═══
+    async function translateCampaign(){
+      if(!currentCampaignId){toast('No campaign loaded','warning');return;}
+      const lang=prompt('Enter target language (e.g. Spanish, French, Arabic):');
+      if(!lang)return;
+      toast(`Translating to ${lang}…`,'info');
+      try{
+        const r=await fetch(`${API}/api/campaign/${currentCampaignId}/translate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({target_language:lang})});
+        const d=await r.json();
+        if(d.translated_posts){
+          toast(`Translated ${d.translated_posts.length} posts to ${lang}`,'success');
+          addActivity('var(--orange)',`<strong>Sarah</strong> translated campaign to ${lang}`);
+          // Show translated captions in a modal
+          const m=document.createElement('div');
+          m.id='translate-modal';
+          m.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(27,42,74,0.25);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;';
+          m.innerHTML=`<div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;"><h3 style="font-size:16px;font-weight:700;color:var(--text);">Translated to ${lang}</h3><button onclick="document.getElementById('translate-modal').remove()" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--text-2);">×</button></div>${d.translated_posts.map((p,i)=>`<div style="margin-bottom:14px;padding:12px;background:var(--bg-warm);border-radius:var(--radius-sm);"><div style="font-size:10px;font-weight:600;color:var(--text-3);margin-bottom:4px;">Post ${i+1}</div><div style="font-size:12px;color:var(--text-2);line-height:1.6;white-space:pre-line;">${p.caption||''}</div></div>`).join('')}<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;"><button class="btn btn-secondary" onclick="document.getElementById('translate-modal').remove()">Close</button></div></div>`;
+          document.body.appendChild(m);
+        }
+      }catch(e){toast('Translation failed','error');}
+    }
+
+    // ═══ DOWNLOAD API ═══
+    async function downloadCampaign(){
+      if(!currentCampaignId){toast('No campaign loaded','warning');return;}
+      toast('Creating download bundle…','info');
+      try{
+        const r=await fetch(`${API}/api/campaign/${currentCampaignId}/download`);
+        const d=await r.json();
+        if(d.download_url){
+          window.open(d.download_url,'_blank');
+          toast('Download ready','success');
+          addActivity('var(--sage)',`<strong>Sarah</strong> downloaded campaign bundle`);
+        }
+      }catch(e){toast('Download failed','error');}
+    }
+
+    // ═══ REGEN IMAGE API ═══
+    async function regenImage(postIdx){
+      if(!currentCampaignId)return;
+      const instructions=prompt('Image instructions (e.g. "Use warmer colors", "Add more negative space"):');
+      if(!instructions)return;
+      toast('Regenerating image…','info');
+      try{
+        await fetch(`${API}/api/campaign/${currentCampaignId}/posts/${postIdx}/regen-image`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({instructions})});
+        toast('Image regen queued','success');
+        addActivity('var(--orange)',`<strong>Sarah</strong> requested image regen for post ${postIdx+1}`);
+      }catch(e){toast('Regen failed','error');}
+    }
+
+    // ═══ REGEN CAPTION API ═══
+    async function regenCaption(postIdx){
+      if(!currentCampaignId)return;
+      const instructions=prompt('Caption instructions (optional — e.g. "More urgent tone", "Focus on statistics"):','');
+      if(instructions===null)return;
+      toast('Regenerating caption…','info');
+      try{
+        await fetch(`${API}/api/campaign/${currentCampaignId}/posts/${postIdx}/regen-caption`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({instructions})});
+        toast('Caption regenerated','success');
+        addActivity('var(--orange)',`<strong>Sarah</strong> regenerated caption for post ${postIdx+1}`);
+        const r=await fetch(`${API}/api/campaign/${currentCampaignId}`);
+        renderCal(await r.json());
+      }catch(e){toast('Caption regen failed','error');}
+    }
+
+    // ═══ WEBSOCKET ═══
+    let ws=null;
+    function connectWebSocket(campaignId){
+      if(ws){try{ws.close();}catch(e){}}
+      try{
+        ws=new WebSocket(`ws://localhost:8000/ws/campaign/${campaignId}`);
+        ws.onopen=()=>{addActivity('var(--sage)','<strong>WebSocket</strong> connected — live updates');};
+        ws.onmessage=(e)=>{
+          try{
+            const msg=JSON.parse(e.data);
+            if(msg.event==='post_approved'){
+              addActivity('var(--sage)',`<strong>Live</strong> post ${msg.index} approved`);
+              fetch(`${API}/api/campaign/${campaignId}`).then(r=>r.json()).then(d=>renderCal(d));
+            }else if(msg.event==='post_edited'){
+              addActivity('var(--orange)',`<strong>Live</strong> post ${msg.index} edited`);
+              fetch(`${API}/api/campaign/${campaignId}`).then(r=>r.json()).then(d=>renderCal(d));
+            }else if(msg.event==='batch_approved'){
+              addActivity('var(--sage)','<strong>Live</strong> all posts approved');
+              fetch(`${API}/api/campaign/${campaignId}`).then(r=>r.json()).then(d=>renderCal(d));
+            }
+          }catch(err){}
+        };
+        ws.onclose=()=>{addActivity('var(--text-3)','<strong>WebSocket</strong> disconnected');};
+      }catch(e){}
+    }
+
+    // ═══ MANUAL URL OVERRIDE ═══
+    function genFromManualUrl(){
+      const input=document.getElementById('manual-url-input');
+      const url=input?.value?.trim();
+      if(!url){toast('Please paste a URL first','warning');return;}
+      if(!url.startsWith('http')){toast('Please enter a valid URL (https://...)','warning');return;}
+      toast(`Generating campaign from URL…`,'info');
+      addActivity('var(--orange)',`<strong>Manual</strong> URL override: ${url.substring(0,50)}…`);
+      genFromStory(null,url);
+      if(input)input.value='';
+    }
+
+    // ═══ CORE API FUNCTIONS ═══
+    async function scanNow(){toast('Scanning…','info');const b=document.querySelector('#view-intel .btn-primary');if(b){b.textContent='Scanning…';b.disabled=true;}try{const r=await fetch(`${API}/api/intel/scan`,{method:'POST'});const d=await r.json();toast(`Found ${d.count} stories`,'success');addActivity('var(--navy)',`<strong>Scan</strong> found ${d.count} stories`);renderIntel(d.stories);}catch(e){toast('Scan failed','error');}finally{if(b){b.textContent='Scan Now';b.disabled=false;}}}
+
+    async function loadIntel(){try{const r=await fetch(`${API}/api/intel/stories`);const d=await r.json();if(d.stories.length>0)renderIntel(d.stories);}catch(e){}}
+
+    function renderIntel(stories){const c=document.querySelector('#view-intel');c.querySelectorAll('.intel-card').forEach(x=>x.remove());const urlCard=document.getElementById('manual-url-card');const ins=urlCard?urlCard.nextSibling:c.lastChild;stories.forEach((s,i)=>{const cd=document.createElement('div');cd.className='intel-card fade-in stagger-'+(i+1);const dateStr=s.published_at?new Date(s.published_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):(s.scanned_at?new Date(s.scanned_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'');cd.innerHTML=`<div class="intel-rank ${s.is_ai_pick?'pick':''}">${i+1}</div><div class="intel-body"><div class="intel-source">${s.source||'News'}</div><div class="intel-title">${s.title}</div><div class="intel-meta">${dateStr} ${s.is_ai_pick?'· <span class="tag tag-red">AI Pick</span>':''}</div><div class="intel-snippet">${s.snippet}</div><div class="intel-actions"><button class="btn-gen" onclick="genFromStory('${s.id}','${s.url}')">Generate Campaign</button>${s.url?`<a href="${s.url}" target="_blank" class="btn btn-outline" style="font-size:11px;text-decoration:none;">Read Full →</a>`:''}</div></div>`;c.insertBefore(cd,ins);});}
+
+    async function genFromStory(id,url){showOv();try{const r=await fetch(`${API}/api/campaign/generate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(id?{story_id:id}:{manual_url:url})});const d=await r.json();currentCampaignId=d.campaign_id;toast('Started','success');addActivity('var(--red)','<strong>AI</strong> started generating campaign');connectWebSocket(d.campaign_id);poll(d.campaign_id);}catch(e){hideOv();toast('Failed','error');}}
+
+    function showOv(){const o=document.getElementById('gen-overlay');o.style.display='flex';document.getElementById('gen-bar').style.width='5%';document.getElementById('gen-step').textContent='Starting…';document.getElementById('gen-title').textContent='Generating Campaign';document.getElementById('gen-spinner').textContent='⟳';document.getElementById('gen-spinner').style.animation='spin 2s linear infinite';}
+    function hideOv(){document.getElementById('gen-overlay').style.display='none';}
+
+    async function poll(id){const st=['Scanning…','Analyzing…','Planning…','Writing…','Quality…','Compliance…','Images…','Rendering…','Finalizing…'];let a=0;const mx=120;const t=setInterval(async()=>{a++;document.getElementById('gen-bar').style.width=Math.min(95,(a/mx)*100+5)+'%';document.getElementById('gen-step').textContent=st[Math.min(a-1,st.length-1)]||'Processing…';try{const r=await fetch(`${API}/api/campaign/${id}`);if(!r.ok)return;const d=await r.json();if(d.posts?.length>0&&d.posts[0].caption){clearInterval(t);document.getElementById('gen-bar').style.width='100%';document.getElementById('gen-step').textContent='Ready';document.getElementById('gen-title').textContent='Campaign Generated';document.getElementById('gen-spinner').style.animation='none';document.getElementById('gen-spinner').textContent='✓';addActivity('var(--sage)',`<strong>AI</strong> generated ${d.posts.length} posts`);setTimeout(()=>{hideOv();currentCampaignPosts=d.posts;renderCal(d);showView('calendar',document.querySelector('.nav-item'));toast(`${d.posts.length} posts ready`,'success');},1200);}}catch(e){}if(a>=mx){clearInterval(t);hideOv();toast('Timed out','warning');}},5000);}
+
+    const DY=['Mon','Tue','Wed','Thu','Fri'];const TC={reactive:'vis-reactive',stat:'vis-stat',explainer:'vis-explainer',action:'vis-action',hope:'vis-hope'};const TL={reactive:'Breaking',stat:'Stat Card',explainer:'Explainer',action:'Action',hope:'Hope'};
+    const AUDIENCES=['General Public','Educators','Parents','College Students','Business Owners','Lawmakers'];
+
+    function renderCal(data){const g=document.getElementById('week-grid');if(!g)return;g.innerHTML='';const c=data.campaign,ps=data.posts;currentCampaignPosts=ps;const st=document.querySelector('.source-title a');if(st)st.textContent=c.source_title||'AI Campaign';document.getElementById('mission-campaign').textContent=c.source_title||'Campaign';ps.forEach((p,i)=>{const vc=TC[p.content_type]||'vis-reactive',tl=TL[p.content_type]||p.content_type,ap=p.status==='approved';const cap=p.caption||'',lines=cap.split('\n').filter(l=>l.trim()),hl=lines[0]||tl,sub=lines.slice(1,3).join(' ').substring(0,120);const isDark=vc==='vis-reactive'||vc==='vis-action';const d=new Date();d.setDate(d.getDate()-d.getDay()+1+7+i);const aud=AUDIENCES[i%AUDIENCES.length];const times=['10:00 AM','11:00 AM','12:00 PM','1:00 PM','5:00 PM'];const imgHtml=p.image_path?`<img src="${p.image_path}" alt="${tl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>`:`<div class="dv-image-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;const col=document.createElement('div');col.className='day-col fade-in stagger-'+(i+1);col.innerHTML=`<div class="day-header"><span class="day-name">${DY[i]||'Day'}</span><span class="day-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span></div><div class="day-schedule"><svg class="icon icon-sm schedule-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><select>${times.map((t,j)=>`<option ${j===i%times.length?'selected':''}>${t}</option>`).join('')}</select><span class="ai-suggest">AI: ${times[i%times.length]} CT</span></div><div class="day-visual ${vc}" onclick="openCarousel(${i})" style="cursor:pointer;" title="Click to expand">${imgHtml}<span class="dv-badge">${tl}</span>${ap?'<div class="dv-approved">✓</div>':''}${p.quality_score?`<div class="q-badge" style="position:absolute;top:12px;right:${ap?'42':'12'}px;">${p.quality_score.toFixed(1)}</div>`:''}<div class="dv-title" style="font-size:12px;">${hl.substring(0,80)}</div><div class="dv-sub">${sub.substring(0,100)}</div><span class="ai-badge ${isDark?'':'ai-badge-light'}">AI-Generated · Human-Approved</span><div class="dv-logo">rM</div></div><div class="caption-preview" id="cap-${i}"><div class="caption-text">${cap}</div><div class="caption-meta"><span class="audience-chip">${aud}</span><span class="char-count">IG: ${cap.length}/2200 · X: ${Math.min(cap.length,280)}/280${cap.length>280?' <span class="char-warn">!</span>':''}</span></div></div><div class="day-footer"><div class="day-platforms"><span class="pp-tab pp-ig active-tab">IG</span><span class="pp-tab pp-x">X</span>${Object.keys(p.platform_renders||{}).map(k=>{const n=k.split('_')[0].toUpperCase();if(n!=='IG'&&n!=='X') return `<span class="pp-tab pp-${n.toLowerCase()}">${n}</span>`;return '';}).join('')}${p.compliance_passed?'<span class="dp" style="background:var(--sage-surface);color:var(--sage);">Compliant</span>':''}</div><div class="day-actions"><button class="da-btn da-caption" onclick="event.stopPropagation();toggleCaption(${i})">Caption</button>${ap?'<button class="da-btn da-done" style="cursor:default;">Approved ✓</button>':` <button class="da-btn da-approve" onclick="event.stopPropagation();approvePost(${i})">Approve</button>`}<button class="da-btn da-edit" onclick="event.stopPropagation();editPost(${i})">Edit</button><button class="da-btn da-caption" onclick="event.stopPropagation();regenCaption(${i})" title="Regenerate caption text" style="font-size:9px;">Regen Text</button><button class="da-btn da-caption" onclick="event.stopPropagation();regenImage(${i})" title="Regenerate image" style="font-size:9px;">Regen Img</button></div></div>`;g.appendChild(col);});}
+
+    async function approvePost(i){if(!currentCampaignId)return;try{await fetch(`${API}/api/campaign/${currentCampaignId}/posts/${i}/approve`,{method:'POST'});toast('Approved','success');addActivity('var(--sage)',`<strong>Sarah</strong> approved ${TL[currentCampaignPosts[i]?.content_type]||'post'}`);const r=await fetch(`${API}/api/campaign/${currentCampaignId}`);renderCal(await r.json());}catch(e){toast('Failed','error');}}
+
+    async function approveAll(){if(!currentCampaignId)return;try{await fetch(`${API}/api/campaign/${currentCampaignId}/approve-all`,{method:'POST'});toast('All posts approved!','success');addActivity('var(--sage)','<strong>Sarah</strong> batch-approved all posts');fireConfetti();const r=await fetch(`${API}/api/campaign/${currentCampaignId}`);renderCal(await r.json());}catch(e){toast('Failed','error');}}
+
+    function editPost(i){const p=currentCampaignPosts[i];if(!p)return;const m=document.createElement('div');m.id='edit-modal';m.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(27,42,74,0.25);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;';m.innerHTML=`<div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;"><h3 style="font-size:16px;font-weight:700;color:var(--text);">${DY[i]} — ${TL[p.content_type]||p.content_type}</h3><button onclick="document.getElementById('edit-modal').remove()" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--text-2);">×</button></div>${p.quality_score?`<div style="margin-bottom:10px;"><span class="tag ${p.quality_score>=7?'tag-sage':'tag-orange'}">Quality: ${p.quality_score.toFixed(1)}</span> ${p.compliance_passed?'<span class="tag tag-sage">Compliant</span>':'<span class="tag tag-red">Flag</span>'}</div>`:''}<div class="input-group"><label class="input-label">Caption</label><textarea id="edit-caption" class="input-field" style="min-height:120px;">${p.caption||''}</textarea></div><div style="font-size:10px;color:var(--text-3);margin-top:-8px;margin-bottom:14px;">Character count: <span style="font-family:'JetBrains Mono',monospace;">${(p.caption||'').length}</span>/2200 (IG) · <span style="font-family:'JetBrains Mono',monospace;">${Math.min((p.caption||'').length,280)}</span>/280 (X)</div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;"><button class="btn btn-secondary" onclick="document.getElementById('edit-modal').remove()">Cancel</button><button class="btn btn-primary" onclick="saveEdit(${i})">Save</button></div></div>`;document.body.appendChild(m);}
+
+    async function saveEdit(i){const c=document.getElementById('edit-caption').value;try{await fetch(`${API}/api/campaign/${currentCampaignId}/posts/${i}/edit`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({caption:c})});toast('Updated','success');document.getElementById('edit-modal')?.remove();const r=await fetch(`${API}/api/campaign/${currentCampaignId}`);renderCal(await r.json());}catch(e){toast('Failed','error');}}
+
+    async function loadLibrary(){try{const r=await fetch(`${API}/api/library`);const d=await r.json();if(!d.campaigns.length)return;const g=document.querySelector('#view-library .lib-grid');if(!g)return;g.innerHTML='';d.campaigns.forEach(c=>{const cd=document.createElement('div');cd.className='lib-card';cd.onclick=()=>{currentCampaignId=c.id;fetch(`${API}/api/campaign/${c.id}`).then(r=>r.json()).then(d=>{renderCal(d);showView('calendar',document.querySelector('.nav-item'));});};const thumbHtml=c.thumbnail_url?`<div class="lib-visual" style="padding:0;overflow:hidden;"><img src="${API}${c.thumbnail_url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=\\'padding:18px;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:linear-gradient(135deg,var(--navy),var(--red));\\' ><span class=\\'dv-badge\\'>Campaign</span><div class=\\'dv-title\\' style=\\'font-size:10px;\\'>${c.source_title||'Campaign'}</div><div class=\\'dv-logo\\'>rM</div></div>'"/></div>`:`<div class="lib-visual vis-reactive" style="padding:18px;"><span class="dv-badge">Campaign</span><div class="dv-title" style="font-size:10px;">${c.source_title||'Campaign'}</div><div class="dv-logo">rM</div></div>`;cd.innerHTML=`${thumbHtml}<div class="lib-info"><div class="lib-date">${new Date(c.created_at).toLocaleDateString()} · ${c.status}</div><div class="lib-title">${c.source_title||'Campaign '+c.id}</div><div class="lib-stats"><span class="lib-stat"><strong>${c.post_count||0}</strong> posts</span><span class="lib-stat"><strong>${c.approved_count||0}</strong> approved</span></div></div>`;g.appendChild(cd);});}catch(e){}}
+
+    // ═══ CONFETTI ANIMATION ═══
+    const confettiStyle=document.createElement('style');
+    confettiStyle.textContent=`@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}`;
+    document.head.appendChild(confettiStyle);
+
+    // ═══ INIT ═══
+    document.addEventListener('click',e=>{if(e.target.classList.contains('rule-toggle')&&!e.target.classList.contains('locked'))e.target.classList.toggle('off');});
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      // Check onboarding
+      if(!localStorage.getItem('redm-onboarded')){
+        document.getElementById('onboarding').classList.add('show');
+      }
+      // Restore theme
+      const savedTheme=localStorage.getItem('redm-theme');
+      if(savedTheme){
+        document.documentElement.setAttribute('data-theme',savedTheme);
+        const sel=document.getElementById('theme-select');
+        if(sel)sel.value=savedTheme;
+      }
+      // Awareness countdown
+      updateAwarenessCountdown();
+      // Health check
+      document.querySelectorAll('.btn-gen').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();const t=b.closest('.intel-card')?.querySelector('.intel-title')?.textContent||'';genFromStory(null,t);}));
+      fetch(`${API}/api/health`).then(r=>r.json()).then(d=>{toast(`Connected — V${d.version}`,'success');addActivity('var(--sage)',`<strong>System</strong> connected V${d.version}`);loadCosts();loadAuditTrail();loadIntel();loadLibrary();
+        // Auto-load the latest campaign
+        fetch(`${API}/api/library`).then(r=>r.json()).then(lib=>{
+          if(lib.campaigns&&lib.campaigns.length>0){
+            const latest=lib.campaigns[0];
+            currentCampaignId=latest.id;
+            fetch(`${API}/api/campaign/${latest.id}`).then(r=>r.json()).then(d=>renderCal(d));
+          }
+        }).catch(()=>{});
+      }).catch(()=>{toast('Backend offline — demo mode','warning');});
+    });
+
+    // ═══ CAROUSEL REVIEW MODAL ═══
+    let carouselIdx = 0;
+
+    function openCarousel(idx) {
+      if (!currentCampaignPosts || !currentCampaignPosts.length) return;
+      carouselIdx = idx;
+      renderCarouselSlide();
+      const ov = document.getElementById('carousel-overlay');
+      ov.style.display = 'flex';
+      requestAnimationFrame(() => ov.classList.add('show'));
+    }
+
+    function closeCarousel() {
+      const ov = document.getElementById('carousel-overlay');
+      ov.classList.remove('show');
+      setTimeout(() => { ov.style.display = 'none'; }, 300);
+    }
+
+    function carouselPrev() { if (carouselIdx > 0) { carouselIdx--; renderCarouselSlide(); } }
+    function carouselNext() { if (carouselIdx < currentCampaignPosts.length - 1) { carouselIdx++; renderCarouselSlide(); } }
+
+    function renderCarouselSlide() {
+      const p = currentCampaignPosts[carouselIdx];
+      if (!p) return;
+      const i = carouselIdx;
+      const tl = TL[p.content_type] || p.content_type;
+      const cbClass = 'cb-' + (p.content_type || 'reactive');
+      const cap = p.caption || '';
+      const lines = cap.split('\n').filter(l => l.trim());
+      const hl = lines[0] || tl;
+      const fullCap = lines.slice(1).join('\n');
+      const ap = p.status === 'approved';
+      const d = new Date();
+      d.setDate(d.getDate() - d.getDay() + 1 + 7 + i);
+      const dayStr = DY[i] + ', ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const imgHtml = p.image_path
+        ? `<img src="${p.image_path}" alt="${tl}"/>`
+        : `<div class="dv-image-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+      const platforms = Object.keys(p.platform_renders || {}).map(k => {
+        const n = k.split('_')[0].toUpperCase();
+        return `<span class="carousel-meta-chip cmc-platform">${n}</span>`;
+      }).join('');
+
+      const card = document.getElementById('carousel-card-inner');
+      card.innerHTML = `
+        <div class="carousel-image">
+          ${imgHtml}
+          <div class="carousel-badge-row">
+            <span class="carousel-badge ${cbClass}">${tl}</span>
+            ${ap ? '<span class="carousel-badge" style="background:var(--sage);">Approved</span>' : ''}
+          </div>
+          ${p.quality_score ? `<div class="carousel-score">${p.quality_score.toFixed(1)}</div>` : ''}
+        </div>
+        <div class="carousel-body">
+          <div class="carousel-day">${dayStr}</div>
+          <div class="carousel-headline">${hl}</div>
+          <div class="carousel-caption">${fullCap || cap}</div>
+          <div class="carousel-meta-row">
+            ${p.compliance_passed ? '<span class="carousel-meta-chip cmc-compliant">Compliant</span>' : '<span class="carousel-meta-chip cmc-flag">Needs Review</span>'}
+            ${platforms}
+            <span class="carousel-meta-chip cmc-platform">${cap.length} chars</span>
+          </div>
+          <div class="carousel-actions">
+            ${ap
+              ? '<button class="btn btn-secondary" style="flex:1;" disabled>Approved ✓</button>'
+              : `<button class="btn btn-primary" onclick="approvePost(${i});renderCarouselSlide();">Approve</button>`
+            }
+            <button class="btn btn-secondary" onclick="closeCarousel();editPost(${i});">Edit</button>
+            <button class="btn btn-outline" onclick="closeCarousel();regenCaption(${i});">Regen Text</button>
+            <button class="btn btn-outline" onclick="closeCarousel();regenImage(${i});">Regen Image</button>
+          </div>
+        </div>`;
+
+      // Update dots
+      document.querySelectorAll('.carousel-dot').forEach((dot, j) => {
+        dot.classList.toggle('active', j === i);
+      });
+      // Update counter
+      document.getElementById('carousel-counter').textContent = `${i + 1} / ${currentCampaignPosts.length}`;
+      // Update nav arrows
+      document.querySelector('.cn-prev').classList.toggle('disabled', i === 0);
+      document.querySelector('.cn-next').classList.toggle('disabled', i === currentCampaignPosts.length - 1);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      const ov = document.getElementById('carousel-overlay');
+      if (!ov || ov.style.display !== 'flex') return;
+      if (e.key === 'ArrowLeft') carouselPrev();
+      else if (e.key === 'ArrowRight') carouselNext();
+      else if (e.key === 'Escape') closeCarousel();
+    });
+  </script>
+
+  <!-- Carousel Overlay -->
+  <div id="carousel-overlay" class="carousel-overlay" onclick="if(event.target===this)closeCarousel();">
+    <div class="carousel-container">
+      <button class="carousel-close" onclick="closeCarousel()">×</button>
+      <button class="carousel-nav cn-prev" onclick="carouselPrev()">←</button>
+      <button class="carousel-nav cn-next" onclick="carouselNext()">→</button>
+      <div class="carousel-card" id="carousel-card-inner"></div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="carousel-dots">
+          <span class="carousel-dot active" onclick="carouselIdx=0;renderCarouselSlide();"></span>
+          <span class="carousel-dot" onclick="carouselIdx=1;renderCarouselSlide();"></span>
+          <span class="carousel-dot" onclick="carouselIdx=2;renderCarouselSlide();"></span>
+          <span class="carousel-dot" onclick="carouselIdx=3;renderCarouselSlide();"></span>
+          <span class="carousel-dot" onclick="carouselIdx=4;renderCarouselSlide();"></span>
+        </div>
+        <span class="carousel-counter" id="carousel-counter">1 / 5</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

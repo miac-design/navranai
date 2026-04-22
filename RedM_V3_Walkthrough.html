@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RedM Command Center V3 — System Walkthrough</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&family=JetBrains+Mono:wght@400&display=swap');
+
+  :root {
+    --red: #AD1F24;
+    --navy: #1B2A4A;
+    --sage: #4A7C59;
+    --orange: #D4722A;
+    --dark: #1e1e28;
+    --gray: #64646e;
+    --light: #f0f0f5;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #2a2a35;
+    line-height: 1.7;
+    background: #fff;
+    font-size: 10.5pt;
+  }
+
+  @media print {
+    body { font-size: 9.5pt; line-height: 1.6; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    @page { margin: 18mm 16mm 18mm 16mm; size: A4; }
+    .cover-page { page-break-after: always; }
+  }
+
+  @media screen {
+    body { max-width: 210mm; margin: 0 auto; padding: 0; background: #e8e8ee; }
+    .page-break { border-top: 2px dashed #ccc; margin: 40px 0; padding-top: 40px; }
+    section { background: #fff; padding: 30px 40px; margin-bottom: 4px; }
+    .cover-page { margin-bottom: 4px; }
+  }
+
+  /* ── Cover ── */
+  .cover-page {
+    background: linear-gradient(135deg, var(--navy) 0%, #0f1a30 100%);
+    color: white;
+    padding: 60px 50px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-page::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 200px;
+    background: var(--red);
+    border-radius: 3px;
+  }
+  .cover-title { font-family: 'Playfair Display', serif; font-size: 42pt; font-weight: 700; margin-left: 20px; line-height: 1.15; }
+  .cover-version { font-size: 14pt; color: #8899bb; margin-left: 20px; margin-top: 8px; }
+  .cover-subtitle { font-size: 11pt; color: #6677aa; margin-left: 20px; margin-top: 30px; max-width: 500px; line-height: 1.7; }
+  .cover-meta { margin-top: 60px; margin-left: 20px; }
+  .cover-meta-row { display: flex; margin-bottom: 4px; font-size: 9.5pt; }
+  .cover-meta-label { color: #6677aa; width: 120px; font-weight: 600; }
+  .cover-meta-value { color: #99aacc; }
+  .cover-hotline { position: absolute; bottom: 0; left: 0; right: 0; background: var(--red); padding: 12px 50px; text-align: center; font-size: 9pt; font-weight: 600; letter-spacing: 0.5px; }
+
+  /* ── Section Titles ── */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--light);
+  }
+  .section-number {
+    background: var(--red);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14pt;
+    flex-shrink: 0;
+  }
+  .section-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 20pt;
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 13pt;
+    color: var(--navy);
+    margin: 22px 0 10px;
+    font-weight: 700;
+  }
+  h4 {
+    font-size: 11pt;
+    color: var(--dark);
+    margin: 16px 0 6px;
+    font-weight: 600;
+  }
+
+  p { margin-bottom: 10px; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    font-size: 9pt;
+  }
+  thead th {
+    background: var(--navy);
+    color: white;
+    padding: 7px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  tbody td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) { background: #f8f8fb; }
+  tbody tr:hover { background: #f0f0f8; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: #f0f0f5;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 8.5pt;
+    color: var(--red);
+  }
+
+  /* ── Callout ── */
+  .callout {
+    border-left: 4px solid var(--navy);
+    background: #f4f6fa;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 9.5pt;
+  }
+  .callout.important { border-color: var(--red); background: #fdf4f4; }
+  .callout.tip { border-color: var(--sage); background: #f2f8f4; }
+  .callout-label { font-weight: 700; text-transform: uppercase; font-size: 8pt; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .callout.important .callout-label { color: var(--red); }
+  .callout.tip .callout-label { color: var(--sage); }
+
+  /* ── Bullets ── */
+  ul { margin: 8px 0 14px 18px; }
+  li { margin-bottom: 5px; }
+  li strong { color: var(--navy); }
+
+  /* ── Diagrams ── */
+  .diagram {
+    background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+    border: 1px solid #e0e2ea;
+    border-radius: 10px;
+    padding: 24px;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+  .diagram-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+
+  /* Flow diagram styles */
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+  .flow-node {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 8.5pt;
+    font-weight: 600;
+    text-align: center;
+    min-width: 90px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .flow-arrow { color: var(--gray); font-size: 16pt; font-weight: 300; }
+  .fn-red { background: #fde8e8; color: var(--red); border: 1px solid #f5c6c6; }
+  .fn-navy { background: #e8ecf4; color: var(--navy); border: 1px solid #c8cfdd; }
+  .fn-sage { background: #e8f4ec; color: var(--sage); border: 1px solid #b8d4c0; }
+  .fn-orange { background: #fdf0e4; color: var(--orange); border: 1px solid #f0d4b0; }
+  .fn-dark { background: #eaeaef; color: var(--dark); border: 1px solid #d0d0d8; }
+
+  /* Architecture diagram */
+  .arch-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .arch-box {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 8.5pt;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .arch-box .arch-label { font-weight: 700; font-size: 9pt; margin-bottom: 4px; }
+  .arch-box .arch-items { font-size: 8pt; color: #555; line-height: 1.5; }
+  .arch-full { grid-column: 1 / -1; }
+
+  /* Stats grid */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .stat-row { display: flex; justify-content: space-between; padding: 7px 12px; border-bottom: 1px solid #eee; font-size: 9.5pt; }
+  .stat-row:nth-child(even) { background: #f8f8fb; }
+  .stat-value { font-weight: 700; color: var(--navy); }
+
+  /* Issue badge */
+  .issue-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 7.5pt;
+    font-weight: 700;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .badge-warn { background: #fff3e0; color: var(--orange); }
+  .badge-note { background: #e8ecf4; color: var(--navy); }
+
+  /* TOC */
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px dotted #ddd;
+  }
+  .toc-num { width: 30px; font-weight: 700; color: var(--red); font-size: 11pt; }
+  .toc-text { font-size: 11pt; color: var(--dark); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ COVER ═══════════════════════ -->
+<div class="cover-page">
+  <div class="cover-title">RedM Command<br>Center V3</div>
+  <div class="cover-version">Complete System Walkthrough</div>
+  <div class="cover-subtitle">
+    A comprehensive technical inspection of the AI-powered anti-human trafficking
+    social media campaign generation system. Every source file has been read
+    and verified line-by-line.
+  </div>
+  <div class="cover-meta">
+    <div class="cover-meta-row"><span class="cover-meta-label">Project</span><span class="cover-meta-value">Fully_functional_MVP_V3</span></div>
+    <div class="cover-meta-row"><span class="cover-meta-label">Architecture</span><span class="cover-meta-value">FastAPI + LangGraph + SQLite</span></div>
+    <div class="cover-meta-row"><span class="cover-meta-label">LLM Models</span><span class="cover-meta-value">GPT-4o · GPT-4o-mini · Gemini 3.1 Flash</span></div>
+    <div class="cover-meta-row"><span class="cover-meta-label">Date</span><span class="cover-meta-value">April 19, 2026</span></div>
+    <div class="cover-meta-row"><span class="cover-meta-label">Classification</span><span class="cover-meta-value">Internal — Confidential</span></div>
+  </div>
+  <div class="cover-hotline">National Human Trafficking Hotline: 1-888-373-7888 &nbsp;|&nbsp; Text BeFree to 233733</div>
+</div>
+
+<!-- ═══════════════════════ TOC ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">☰</div><div class="section-name">Table of Contents</div></div>
+  <div class="toc-item"><span class="toc-num">1</span><span class="toc-text">Executive Summary</span></div>
+  <div class="toc-item"><span class="toc-num">2</span><span class="toc-text">System Architecture</span></div>
+  <div class="toc-item"><span class="toc-num">3</span><span class="toc-text">Complete File Inventory</span></div>
+  <div class="toc-item"><span class="toc-num">4</span><span class="toc-text">LLM Models &amp; Usage Matrix</span></div>
+  <div class="toc-item"><span class="toc-num">5</span><span class="toc-text">LangGraph Pipeline — Detailed Flow</span></div>
+  <div class="toc-item"><span class="toc-num">6</span><span class="toc-text">API Endpoints (19 REST + 1 WebSocket)</span></div>
+  <div class="toc-item"><span class="toc-num">7</span><span class="toc-text">Database Schema (6 Tables)</span></div>
+  <div class="toc-item"><span class="toc-num">8</span><span class="toc-text">Frontend Dashboard Features</span></div>
+  <div class="toc-item"><span class="toc-num">9</span><span class="toc-text">Content Rules Engine</span></div>
+  <div class="toc-item"><span class="toc-num">10</span><span class="toc-text">Configuration &amp; Dependencies</span></div>
+  <div class="toc-item"><span class="toc-num">11</span><span class="toc-text">Data Flow — End-to-End Campaign</span></div>
+  <div class="toc-item"><span class="toc-num">12</span><span class="toc-text">Known Issues &amp; Observations</span></div>
+  <div class="toc-item"><span class="toc-num">13</span><span class="toc-text">Stats Summary</span></div>
+</section>
+
+<!-- ═══════════════════════ 1. EXECUTIVE SUMMARY ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">1</div><div class="section-name">Executive Summary</div></div>
+  <p><strong>RedM Command Center V3</strong> is an AI-powered social media campaign generator designed for anti-human trafficking awareness organizations. Given a single news story about human trafficking, the system automatically produces a complete <strong>5-post weekly campaign</strong> (Monday through Friday), where each post has a unique content type, an AI-generated caption with 2 alternative variants, AI-generated imagery, multi-platform renders for 5 social media platforms, quality scoring, and ethical compliance checks — all before human review.</p>
+  <p>The system is built as a full-stack application with a <strong>FastAPI backend</strong> (19 REST endpoints + WebSocket), a <strong>LangGraph-based AI pipeline</strong> (12 processing nodes), <strong>SQLite persistence</strong> (6 database tables), and a polished <strong>single-page HTML dashboard</strong> with dark mode, carousel post viewer, keyboard shortcuts, and real-time WebSocket updates.</p>
+
+  <h3>Key Capabilities</h3>
+  <ul>
+    <li><strong>Intelligence Scanning:</strong> Automated Google News RSS scanning across 12 trusted news domains</li>
+    <li><strong>Story Bypass Architecture:</strong> Pre-selected stories skip the LLM trend analyzer, saving time and API costs</li>
+    <li><strong>5-Post Campaign Generation:</strong> Reactive (Mon), Stat Card (Tue), Explainer (Wed), Action (Thu), Hope (Fri)</li>
+    <li><strong>Multi-Model AI Pipeline:</strong> GPT-4o for planning, GPT-4o-mini for writing/quality/compliance, Gemini 3.1 Flash for images</li>
+    <li><strong>Ethical Compliance Engine:</strong> YAML-driven rules with regex + LLM validation and auto-fix</li>
+    <li><strong>Multi-Platform Rendering:</strong> Images rendered to IG Square, IG Stories, X Card, LinkedIn, Facebook</li>
+    <li><strong>Human-in-the-Loop Review:</strong> Pipeline pauses for batch approval before publishing</li>
+    <li><strong>Full Audit Trail:</strong> Every action logged with timestamps for accountability</li>
+    <li><strong>Multi-Language:</strong> Translation to Spanish, French, Portuguese with cultural adaptation</li>
+    <li><strong>Cost Tracking:</strong> Per-token API cost logging across all LLM calls</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════ 2. ARCHITECTURE ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">2</div><div class="section-name">System Architecture</div></div>
+
+  <div class="diagram no-break">
+    <div class="diagram-title">System Architecture Overview</div>
+    <div class="arch-grid">
+      <div class="arch-box arch-full" style="background:#e8ecf4;border:2px solid var(--navy);">
+        <div class="arch-label" style="color:var(--navy);">🖥️ Frontend — design_v3.html (1,322 lines · 122 KB)</div>
+        <div class="arch-items">Single-Page Application · Dark Mode · Carousel Viewer · WebSocket · Keyboard Shortcuts · 9 Dashboard Views</div>
+      </div>
+      <div class="arch-box" style="background:#fde8e8;border:1.5px solid var(--red);">
+        <div class="arch-label" style="color:var(--red);">⚡ API Gateway</div>
+        <div class="arch-items">FastAPI · server.py<br>19 REST + 1 WebSocket<br>Port 8000</div>
+      </div>
+      <div class="arch-box" style="background:#fdf0e4;border:1.5px solid var(--orange);">
+        <div class="arch-label" style="color:var(--orange);">🧠 AI Pipeline</div>
+        <div class="arch-items">LangGraph · graph.py<br>12 Nodes · 8 Agents<br>MemorySaver Checkpointer</div>
+      </div>
+      <div class="arch-box" style="background:#e8f4ec;border:1.5px solid var(--sage);">
+        <div class="arch-label" style="color:var(--sage);">🗄️ Persistence</div>
+        <div class="arch-items">SQLite (6 tables)<br>ChromaDB (dedup)<br>Filesystem (outputs/)</div>
+      </div>
+      <div class="arch-box" style="background:#f5f5f8;border:1.5px solid #ccc;">
+        <div class="arch-label">📡 Intel Layer</div>
+        <div class="arch-items">Google News RSS<br>Exa.ai Neural Search<br>Crawl4AI + BS4 Scraper</div>
+      </div>
+      <div class="arch-box" style="background:#f5f5f8;border:1.5px solid #ccc;">
+        <div class="arch-label">🤖 LLM Providers</div>
+        <div class="arch-items">OpenAI: GPT-4o + GPT-4o-mini<br>Google: Gemini 3.1 Flash<br>LangSmith: Tracing</div>
+      </div>
+      <div class="arch-box" style="background:#f5f5f8;border:1.5px solid #ccc;">
+        <div class="arch-label">⚙️ Services</div>
+        <div class="arch-items">AuditService · CostTracker<br>PromptRegistry · Scheduler<br>LanguageAdapter · ContentMemory</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Layer Descriptions</h3>
+  <p><strong>Frontend (design_v3.html):</strong> A single-page HTML/CSS/JS application that communicates with the backend via fetch() API calls and WebSocket connections. Uses Inter and JetBrains Mono fonts, CSS custom properties for light/dark theming, and vanilla JavaScript with no framework dependencies.</p>
+  <p><strong>API Gateway (server.py):</strong> A FastAPI application (566 lines) running on Uvicorn at port 8000. CORS is open for local development. Campaign generation is delegated to background threads via <code>asyncio.to_thread</code>. Static file serving for generated images at <code>/outputs/</code>.</p>
+  <p><strong>AI Pipeline (graph.py):</strong> A LangGraph StateGraph compiled with MemorySaver checkpointer and <code>interrupt_after=['batch_review']</code> for human-in-the-loop control. Uses conditional edges for story bypass routing and the 5-post generation loop.</p>
+  <p><strong>Persistence:</strong> SQLite via SQLModel (6 tables) for structured data. ChromaDB for semantic dedup (0.85 cosine threshold). Filesystem for generated images and ZIP bundles. YAML configs for content rules and audience profiles.</p>
+</section>
+
+<!-- ═══════════════════════ 3. FILE INVENTORY ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">3</div><div class="section-name">Complete File Inventory</div></div>
+
+  <h3>Root Level (3 HTML Files)</h3>
+  <table><thead><tr><th>File</th><th>Lines</th><th>Size</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>design_v3.html</code></td><td>1,322</td><td>122 KB</td><td>Primary UI — full SPA dashboard with 9 views</td></tr>
+    <tr><td><code>design_complete.html</code></td><td>~1,218</td><td>91 KB</td><td>Earlier/simpler UI version</td></tr>
+    <tr><td><code>architecture_diagram.html</code></td><td>~515</td><td>23 KB</td><td>Interactive architecture visualization</td></tr>
+  </tbody></table>
+
+  <h3>Backend — Top Level</h3>
+  <table><thead><tr><th>File</th><th>Lines</th><th>Size</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>server.py</code></td><td>566</td><td>22 KB</td><td>FastAPI server — 19 endpoints + WebSocket, serves dashboard at /</td></tr>
+    <tr><td><code>config.py</code></td><td>65</td><td>2 KB</td><td>Global config: 13 news domains, 5 platform specs, 4 languages</td></tr>
+    <tr><td><code>requirements.txt</code></td><td>35</td><td>491 B</td><td>18 pinned Python dependencies</td></tr>
+    <tr><td><code>.env</code></td><td>9</td><td>555 B</td><td>API keys: OpenAI, Gemini, Exa, LangSmith</td></tr>
+    <tr><td><code>redm_v3.db</code></td><td>—</td><td>~17 MB</td><td>SQLite database with real campaign data from 5 runs</td></tr>
+  </tbody></table>
+
+  <h3>Backend — Core Data (src/)</h3>
+  <table><thead><tr><th>File</th><th>Lines</th><th>Size</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>models.py</code></td><td>122</td><td>5 KB</td><td>6 SQLModel table definitions: Campaign, Post, IntelStory, AuditEntry, PromptVersion, CostLog</td></tr>
+    <tr><td><code>state.py</code></td><td>81</td><td>4 KB</td><td>LangGraph AgentState TypedDict + CampaignPost Pydantic model with 16 fields</td></tr>
+  </tbody></table>
+
+  <h3>Backend — AI Agents (src/agents/) — 8 Files</h3>
+  <table><thead><tr><th>File</th><th>Lines</th><th>LLM Model</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>trend_analyzer.py</code></td><td>126</td><td><code>gpt-4o-mini</code></td><td>Scans news → identifies single most important trafficking story</td></tr>
+    <tr><td><code>audience_analyzer.py</code></td><td>100</td><td><code>gpt-4o-mini</code></td><td>Matches story to 1 of 6 audience profiles → writing + visual briefs</td></tr>
+    <tr><td><code>campaign_planner.py</code></td><td>136</td><td><strong><code>gpt-4o</code></strong></td><td>Transforms 1 story into 5 structured CampaignPost briefs</td></tr>
+    <tr><td><code>writer.py</code></td><td>175</td><td><code>gpt-4o-mini</code></td><td>Generates caption + 2 variants per post; per-type system prompts</td></tr>
+    <tr><td><code>quality_gate.py</code></td><td>103</td><td><code>gpt-4o-mini</code></td><td>LLM-as-Judge: scores 0-10 across hallucination, tone, CTA, source</td></tr>
+    <tr><td><code>compliance_checker.py</code></td><td>140</td><td><code>gpt-4o-mini</code></td><td>Regex quick-check + LLM deep-check against YAML rules; auto-fixes</td></tr>
+    <tr><td><code>image_generator.py</code></td><td>321</td><td><code>gpt-4o-mini</code> + <code>gemini-3.1-flash</code></td><td>GPT builds prompt → Gemini generates image → Pillow composites text</td></tr>
+    <tr><td><code>publisher.py</code></td><td>91</td><td><code>gpt-4o-mini</code></td><td>Formats captions for X/IG; generates HTML preview (NOT in pipeline)</td></tr>
+  </tbody></table>
+
+  <h3>Backend — Services (src/services/) — 7 Files</h3>
+  <table><thead><tr><th>File</th><th>Lines</th><th>LLM?</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>intel_service.py</code></td><td>122</td><td>Declared unused</td><td>News scan → persist to IntelStory table; ranker built but never called</td></tr>
+    <tr><td><code>content_memory.py</code></td><td>102</td><td>No</td><td>ChromaDB semantic dedup (0.85 cosine threshold); built but not wired</td></tr>
+    <tr><td><code>cost_tracker.py</code></td><td>91</td><td>No</td><td>Per-call token usage + cost to CostLog table; pricing for all 3 models</td></tr>
+    <tr><td><code>audit_service.py</code></td><td>92</td><td>No</td><td>Immutable action log → AuditEntry table</td></tr>
+    <tr><td><code>prompt_registry.py</code></td><td>101</td><td>No</td><td>Prompt versioning + running avg quality scores for A/B testing</td></tr>
+    <tr><td><code>language_adapter.py</code></td><td>92</td><td><code>gpt-4o-mini</code></td><td>Translates campaigns to ES/FR/PT with cultural adaptation</td></tr>
+    <tr><td><code>scheduler.py</code></td><td>162</td><td>No</td><td>APScheduler timed publishing + ZIP bundle creator with manifest.json</td></tr>
+  </tbody></table>
+
+  <h3>Backend — Tools (src/tools/) — 5 Files</h3>
+  <table><thead><tr><th>File</th><th>Lines</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>google_news.py</code></td><td>93</td><td>Google News RSS parser; domain-restricted to 12 trusted sources; no API key</td></tr>
+    <tr><td><code>exa_search.py</code></td><td>85</td><td>Exa.ai neural search across 13 news domains + X.com social monitoring</td></tr>
+    <tr><td><code>crawl4ai_scraper.py</code></td><td>50</td><td>Async web scraper: Crawl4AI → BeautifulSoup4 fallback</td></tr>
+    <tr><td><code>api_wrapper.py</code></td><td>58</td><td>Retry decorator (3x, exponential backoff) + auto-scrape thin results</td></tr>
+    <tr><td><code>platform_renderer.py</code></td><td>96</td><td>Smart-resizes images to 5 platform sizes, protects bottom 25% text zone</td></tr>
+  </tbody></table>
+
+  <h3>Backend — Configuration (config/)</h3>
+  <table><thead><tr><th>File</th><th>Lines</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td><code>content_rules.yaml</code></td><td>65</td><td>6 language rules, 7 content rules, content mix order, post structure</td></tr>
+    <tr><td><code>audience_profiles.md</code></td><td>65</td><td>6 audience personas with trigger keywords, tone, focus, CTA, visual style</td></tr>
+    <tr><td><code>visual_philosophy.md</code></td><td>63</td><td>"Less Is More": 1 subject, 50-60% negative space, 2-3 tones, bottom 25% reserved</td></tr>
+    <tr><td><code>PlayfairDisplay-Bold.ttf</code></td><td>—</td><td>Serif font for headline overlays on generated images</td></tr>
+    <tr><td><code>Roboto-Bold/Regular.ttf</code></td><td>—</td><td>Sans font for fact + source line overlays on generated images</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ═══════════════════════ 4. LLM MODELS ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">4</div><div class="section-name">LLM Models &amp; Usage Matrix</div></div>
+
+  <p>The system uses exactly <strong>3 distinct LLM models</strong> across 2 providers. The Campaign Planner is the only agent using the full GPT-4o model (the "strategic brain"), while all other text agents use the cheaper GPT-4o-mini. Image generation is handled exclusively by Google Gemini.</p>
+
+  <div class="callout important no-break">
+    <div class="callout-label">⚠️ Critical Detail</div>
+    The Campaign Planner uses <code>gpt-4o</code> (line 56 in campaign_planner.py) — NOT gpt-4o-mini. This is intentional: it is the strategic brain that creates the 5-post narrative arc, requiring the highest reasoning capability.
+  </div>
+
+  <h3>Model Overview</h3>
+  <table><thead><tr><th>Model</th><th>Provider</th><th>Temperature</th><th>Used By</th></tr></thead><tbody>
+    <tr><td><strong><code>gpt-4o</code></strong></td><td>OpenAI</td><td>0.3</td><td>Campaign Planner only (strategic planning)</td></tr>
+    <tr><td><code>gpt-4o-mini</code></td><td>OpenAI</td><td>0 / 0.2 / 0.3 / 0.7</td><td>All other text agents (7 agents, 10 instances)</td></tr>
+    <tr><td><code>gemini-3.1-flash-image-preview</code></td><td>Google</td><td>N/A</td><td>Image Generator only</td></tr>
+  </tbody></table>
+
+  <h3>Detailed Agent → Model Mapping</h3>
+  <table><thead><tr><th>Agent</th><th>File:Line</th><th>Model</th><th>Temp</th><th>Structured Output</th></tr></thead><tbody>
+    <tr><td>Trend Analyzer</td><td>trend_analyzer.py:25</td><td><code>gpt-4o-mini</code></td><td>0</td><td>TrendAnalysis (Pydantic)</td></tr>
+    <tr><td>Audience Analyzer</td><td>audience_analyzer.py:47</td><td><code>gpt-4o-mini</code></td><td>0</td><td>AudienceDecision</td></tr>
+    <tr><td>Campaign Planner</td><td>campaign_planner.py:56</td><td><strong><code>gpt-4o</code></strong></td><td>0.3</td><td>CampaignBriefs (5 briefs)</td></tr>
+    <tr><td>Writer (primary)</td><td>writer.py:76</td><td><code>gpt-4o-mini</code></td><td>0.3</td><td>Raw text</td></tr>
+    <tr><td>Writer (variants)</td><td>writer.py:77</td><td><code>gpt-4o-mini</code></td><td>0.7</td><td>Raw text (higher diversity)</td></tr>
+    <tr><td>Quality Gate</td><td>quality_gate.py:55</td><td><code>gpt-4o-mini</code></td><td>0</td><td>QualityScore</td></tr>
+    <tr><td>Compliance Checker</td><td>compliance_checker.py:30</td><td><code>gpt-4o-mini</code></td><td>0</td><td>ComplianceResult</td></tr>
+    <tr><td>Image Gen (prompt)</td><td>image_generator.py:60</td><td><code>gpt-4o-mini</code></td><td>0.7</td><td>Raw text (prompt)</td></tr>
+    <tr><td>Image Gen (overlay)</td><td>image_generator.py:61</td><td><code>gpt-4o-mini</code></td><td>0</td><td>OverlayText</td></tr>
+    <tr><td>Publisher</td><td>publisher.py:18</td><td><code>gpt-4o-mini</code></td><td>0.3</td><td>Raw text</td></tr>
+    <tr><td>Language Adapter</td><td>language_adapter.py:35</td><td><code>gpt-4o-mini</code></td><td>0.2</td><td>TranslatedPost</td></tr>
+    <tr><td>Intel Service (ranker)</td><td>intel_service.py:35</td><td><code>gpt-4o-mini</code></td><td>0</td><td>StoryRankings (UNUSED)</td></tr>
+  </tbody></table>
+
+  <h3>LLM Calls Per Campaign Run (5 Posts)</h3>
+  <table><thead><tr><th>Agent</th><th>Calls/Post</th><th>× 5 Posts</th><th>Model</th></tr></thead><tbody>
+    <tr><td>Trend Analyzer (or Story Loader = 0)</td><td>1</td><td>1</td><td>gpt-4o-mini</td></tr>
+    <tr><td>Audience Analyzer</td><td>1</td><td>1</td><td>gpt-4o-mini</td></tr>
+    <tr><td>Campaign Planner</td><td>1</td><td>1</td><td><strong>gpt-4o</strong></td></tr>
+    <tr><td>Writer (primary)</td><td>1</td><td>5</td><td>gpt-4o-mini</td></tr>
+    <tr><td>Writer (variant 1 + 2)</td><td>2</td><td>10</td><td>gpt-4o-mini</td></tr>
+    <tr><td>Quality Gate</td><td>1</td><td>5</td><td>gpt-4o-mini</td></tr>
+    <tr><td>Compliance Checker</td><td>1</td><td>5</td><td>gpt-4o-mini</td></tr>
+    <tr><td>Image Gen (prompt + overlay)</td><td>2</td><td>10</td><td>gpt-4o-mini</td></tr>
+    <tr><td>Image Gen (Gemini)</td><td>1-2</td><td>5-10</td><td>gemini-3.1-flash</td></tr>
+    <tr style="font-weight:700;background:#e8ecf4;"><td>TOTAL</td><td>—</td><td>~43-48</td><td>3 models</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ═══════════════════════ 5. PIPELINE ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">5</div><div class="section-name">LangGraph Pipeline — Detailed Flow</div></div>
+
+  <p>The pipeline is implemented as a LangGraph StateGraph in <code>graph.py</code> (207 lines). It defines 12 nodes connected by conditional edges, compiled with a MemorySaver checkpointer and <code>interrupt_after=['batch_review']</code>.</p>
+
+  <div class="diagram no-break">
+    <div class="diagram-title">Campaign Generation Pipeline (12 Nodes)</div>
+    <div class="flow">
+      <div class="flow-node fn-dark">START</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-navy">🔀 Entry Router</div>
+      <div class="flow-arrow">→</div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+        <div class="flow-node fn-red" style="font-size:7.5pt;">🔍 Trend Analyzer<br><em>or</em></div>
+        <div class="flow-node fn-sage" style="font-size:7.5pt;">⚡ Story Loader<br>(bypass)</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-navy">👥 Audience<br>Analyzer</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-orange">📋 Campaign<br>Planner (GPT-4o)</div>
+    </div>
+    <div style="text-align:center;margin:10px 0;font-size:20pt;color:var(--gray);">↓</div>
+    <div style="border:2px dashed var(--sage);border-radius:10px;padding:14px;background:#f8fcf9;">
+      <div style="text-align:center;font-size:8pt;font-weight:700;color:var(--sage);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">↻ Loop × 5 Posts (Reactive → Stat → Explainer → Action → Hope)</div>
+      <div class="flow">
+        <div class="flow-node fn-navy">✍️ Writer<br><span style="font-size:7pt;">3 LLM calls</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node fn-orange">⭐ Quality Gate<br><span style="font-size:7pt;">Score 0-10</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node fn-red">✅ Compliance<br><span style="font-size:7pt;">Regex + LLM</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node fn-sage">🎨 Image Gen<br><span style="font-size:7pt;">GPT + Gemini</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node fn-navy">📐 Renderer<br><span style="font-size:7pt;">5 platforms</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node fn-dark">🔄 Advance<br><span style="font-size:7pt;">idx++</span></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin:10px 0;font-size:20pt;color:var(--gray);">↓</div>
+    <div class="flow">
+      <div class="flow-node fn-red" style="font-size:10pt;">🔔 Batch Review (HITL Pause)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-dark">END</div>
+    </div>
+  </div>
+
+  <div class="callout tip no-break">
+    <div class="callout-label">💡 Story Bypass Innovation</div>
+    When a user picks a story from the Intel Feed, <code>server.py:228-232</code> sets <code>manual_url</code> + <code>story_title</code> in state. The <code>entry_router</code> in <code>graph.py:119</code> detects <code>story_title</code> and routes to <code>story_loader</code> (which only scrapes — <strong>0 LLM calls</strong>) instead of <code>trend_analyzer</code>.
+  </div>
+
+  <h3>Routing Logic</h3>
+  <ul>
+    <li><strong>route_entry:</strong> If <code>state.story_title</code> exists → <code>story_loader</code>. Else → <code>trend_analyzer</code>.</li>
+    <li><strong>route_after_planner:</strong> If <code>campaign_posts</code> is populated → <code>write_post</code>. Else → END.</li>
+    <li><strong>route_after_render:</strong> If <code>idx + 1 < len(posts)</code> → <code>advance_index</code> (loop). Else → <code>batch_review</code>.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════ 6. API ENDPOINTS ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">6</div><div class="section-name">API Endpoints (19 REST + 1 WebSocket)</div></div>
+
+  <table><thead><tr><th>#</th><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td>1</td><td>GET</td><td><code>/</code></td><td>Serves design_v3.html dashboard</td></tr>
+    <tr><td>2</td><td>POST</td><td><code>/api/intel/scan</code></td><td>Trigger Google News RSS scan → persist stories</td></tr>
+    <tr><td>3</td><td>GET</td><td><code>/api/intel/stories</code></td><td>Get cached intelligence stories</td></tr>
+    <tr><td>4</td><td>POST</td><td><code>/api/campaign/generate</code></td><td>Start 5-post campaign from story or URL</td></tr>
+    <tr><td>5</td><td>GET</td><td><code>/api/campaign/{id}</code></td><td>Get campaign + all posts (polling endpoint)</td></tr>
+    <tr><td>6</td><td>POST</td><td><code>/api/campaign/{id}/approve-all</code></td><td>Batch approve all posts</td></tr>
+    <tr><td>7</td><td>POST</td><td><code>/api/campaign/{id}/posts/{idx}/approve</code></td><td>Approve single post</td></tr>
+    <tr><td>8</td><td>POST</td><td><code>/api/campaign/{id}/posts/{idx}/edit</code></td><td>Edit caption and/or hashtags</td></tr>
+    <tr><td>9</td><td>POST</td><td><code>/api/campaign/{id}/posts/{idx}/regen-image</code></td><td>Regenerate image with instructions</td></tr>
+    <tr><td>10</td><td>POST</td><td><code>/api/campaign/{id}/translate</code></td><td>Translate campaign to ES/FR/PT</td></tr>
+    <tr><td>11</td><td>GET</td><td><code>/api/campaign/{id}/download</code></td><td>Create + return ZIP bundle URL</td></tr>
+    <tr><td>12</td><td>GET</td><td><code>/api/library</code></td><td>All past campaigns with thumbnails</td></tr>
+    <tr><td>13</td><td>GET</td><td><code>/api/rules</code></td><td>Get content rules from YAML</td></tr>
+    <tr><td>14</td><td>PUT</td><td><code>/api/rules</code></td><td>Update content rules from dashboard</td></tr>
+    <tr><td>15</td><td>GET</td><td><code>/api/settings</code></td><td>Get application settings</td></tr>
+    <tr><td>16</td><td>PUT</td><td><code>/api/settings</code></td><td>Update settings</td></tr>
+    <tr><td>17</td><td>GET</td><td><code>/api/audit/{id}</code></td><td>Audit trail for one campaign</td></tr>
+    <tr><td>18</td><td>GET</td><td><code>/api/audit</code></td><td>Recent activity across all campaigns</td></tr>
+    <tr><td>19</td><td>GET</td><td><code>/api/costs</code></td><td>Lifetime cost summary</td></tr>
+    <tr><td>20</td><td>GET</td><td><code>/api/costs/{id}</code></td><td>Per-campaign cost breakdown by agent</td></tr>
+    <tr><td>21</td><td>GET</td><td><code>/api/health</code></td><td>Health check — returns version + feature list</td></tr>
+    <tr><td>22</td><td>WS</td><td><code>/ws/campaign/{id}</code></td><td>Real-time campaign updates (approve, edit, batch)</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ═══════════════════════ 7. DATABASE ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">7</div><div class="section-name">Database Schema (6 Tables)</div></div>
+  <p>All persistence uses SQLite via SQLModel. The database file is <code>redm_v3.db</code> (~17 MB). All 6 tables are created on server startup via <code>init_db()</code>.</p>
+
+  <div class="diagram no-break">
+    <div class="diagram-title">Entity Relationship Overview</div>
+    <div class="arch-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="arch-box" style="background:#fde8e8;border:2px solid var(--red);">
+        <div class="arch-label" style="color:var(--red);">Campaign (1)</div>
+        <div class="arch-items">id · source_url · source_title · status<br>total_cost_usd · language · thread_id · created_at</div>
+      </div>
+      <div class="arch-box" style="background:#e8ecf4;border:2px solid var(--navy);">
+        <div class="arch-label" style="color:var(--navy);">Post (5 per campaign)</div>
+        <div class="arch-items">campaign_id (FK) · content_type · day_of_week<br>caption · hashtags (JSON) · image_path · quality_score<br>compliance_passed · variants (JSON) · platform_renders (JSON)</div>
+      </div>
+      <div class="arch-box" style="background:#fdf0e4;border:1.5px solid var(--orange);">
+        <div class="arch-label" style="color:var(--orange);">IntelStory</div>
+        <div class="arch-items">title · source · url · snippet · full_content<br>relevance_score · is_ai_pick · used_in_campaign_id</div>
+      </div>
+      <div class="arch-box" style="background:#e8f4ec;border:1.5px solid var(--sage);">
+        <div class="arch-label" style="color:var(--sage);">AuditEntry</div>
+        <div class="arch-items">campaign_id · post_id · action · user_id<br>details (JSON) · timestamp</div>
+      </div>
+      <div class="arch-box" style="background:#f5f5f8;border:1.5px solid #ccc;">
+        <div class="arch-label">PromptVersion</div>
+        <div class="arch-items">agent · version · prompt_text<br>avg_quality_score · usage_count · is_active</div>
+      </div>
+      <div class="arch-box" style="background:#f5f5f8;border:1.5px solid #ccc;">
+        <div class="arch-label">CostLog</div>
+        <div class="arch-items">campaign_id · agent · model<br>input_tokens · output_tokens · cost_usd</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ 8. FRONTEND ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">8</div><div class="section-name">Frontend Dashboard Features</div></div>
+
+  <p>The primary UI is <code>design_v3.html</code> (1,322 lines, 122 KB) — a single-page application with 9 views, a collapsible activity panel, a 3-step onboarding overlay, and a carousel review modal.</p>
+
+  <h3>Dashboard Views (9)</h3>
+  <table><thead><tr><th>View</th><th>Key Features</th></tr></thead><tbody>
+    <tr><td><strong>Content Calendar</strong></td><td>5-day grid with image thumbnails, quality badges, schedule selectors, audience chips, character counts, Approve/Edit/Regen per post, source story bar, weekly email preview</td></tr>
+    <tr><td><strong>Intelligence Feed</strong></td><td>Live scan button, ranked story cards with AI Pick badges, manual URL override input, "Generate Campaign" per story</td></tr>
+    <tr><td><strong>Impact Tracker</strong></td><td>KPI cards (reach, engagement, hotline clicks, cost from /api/costs), per-type performance bars, weekly trend chart</td></tr>
+    <tr><td><strong>Content Library</strong></td><td>Grid of past campaigns with thumbnail images from /api/library; click to reload into calendar</td></tr>
+    <tr><td><strong>Content Rules</strong></td><td>3-tier system: Legal (locked), Ethical Language (toggleable), Brand Voice (customizable); compliance score bar</td></tr>
+    <tr><td><strong>Social Accounts</strong></td><td>4 platform cards: IG, X, LI (connected), FB (pending)</td></tr>
+    <tr><td><strong>Team Management</strong></td><td>3 members with roles (Creator, Reviewer, Admin); invite button</td></tr>
+    <tr><td><strong>Settings</strong></td><td>Theme (light/dark), scan frequency, source priority, posts per campaign, API keys</td></tr>
+    <tr><td><strong>Onboarding</strong></td><td>3-step overlay: Welcome → Workflow → Ethics. Dismissed to localStorage</td></tr>
+  </tbody></table>
+
+  <h3>Interactive Features</h3>
+  <table><thead><tr><th>Feature</th><th>Details</th></tr></thead><tbody>
+    <tr><td><strong>Dark Mode</strong></td><td><code>data-theme="dark"</code> on <code>&lt;html&gt;</code>; persisted to localStorage</td></tr>
+    <tr><td><strong>Carousel Modal</strong></td><td>Full-screen post viewer with ←/→ nav, dot indicators, approve/edit/regen</td></tr>
+    <tr><td><strong>Keyboard Shortcuts</strong></td><td>J/K navigate, A approve, E edit, C caption, 1-5 jump to day, Esc close</td></tr>
+    <tr><td><strong>Confetti</strong></td><td>60 colored particles on batch approval via CSS @keyframes</td></tr>
+    <tr><td><strong>Awareness Countdown</strong></td><td>Sidebar countdown to next anti-trafficking day (Jul 30, Jan 11, Jan 1)</td></tr>
+    <tr><td><strong>WebSocket</strong></td><td>Connects to <code>ws://localhost:8000/ws/campaign/{id}</code> for live updates</td></tr>
+    <tr><td><strong>Generation Overlay</strong></td><td>Progress bar + step indicators during pipeline execution</td></tr>
+    <tr><td><strong>Activity Panel</strong></td><td>Collapsible sidebar with color-coded audit trail entries</td></tr>
+    <tr><td><strong>Persistent Hotline</strong></td><td>Red bar: <code>1-888-373-7888 / Text BeFree to 233733</code></td></tr>
+    <tr><td><strong>Auto-load</strong></td><td>On load: health check → costs → audit → intel → library → latest campaign</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ═══════════════════════ 9. CONTENT RULES ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">9</div><div class="section-name">Content Rules Engine</div></div>
+
+  <p>The rules system is driven by <code>content_rules.yaml</code> (65 lines), consumed by <strong>3 agents</strong>: Campaign Planner, Writer, and Compliance Checker.</p>
+
+  <div class="diagram no-break">
+    <div class="diagram-title">Rules Consumption Flow</div>
+    <div class="flow">
+      <div class="flow-node fn-dark" style="min-width:140px;">📄 content_rules.yaml</div>
+      <div class="flow-arrow">→</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="flow-node fn-orange">Campaign Planner<br><span style="font-size:7pt;">language_rules + content_mix</span></div>
+        <div class="flow-node fn-navy">Writer Agent<br><span style="font-size:7pt;">language_rules for prompts</span></div>
+        <div class="flow-node fn-red">Compliance Checker<br><span style="font-size:7pt;">ALL sections: regex + LLM</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Language Rules (6 Entries — All Enabled)</h3>
+  <table><thead><tr><th>Banned Term</th><th>Ethical Replacement</th><th>Reason</th></tr></thead><tbody>
+    <tr><td>"rescued"</td><td>"identified" / "supported"</td><td>Centers survivor agency</td></tr>
+    <tr><td>"child prostitute"</td><td>"child victim of sex trafficking"</td><td>Children cannot consent</td></tr>
+    <tr><td>"sex slave"</td><td>"survivor of sex trafficking"</td><td>Avoids dehumanization</td></tr>
+    <tr><td>"sold her body"</td><td>"was exploited"</td><td>Removes victim blame</td></tr>
+    <tr><td>"illegal immigrant"</td><td>"undocumented individual"</td><td>Person-first language</td></tr>
+    <tr><td>"the trafficking problem"</td><td>"trafficking affects [people]"</td><td>Center impacted people</td></tr>
+  </tbody></table>
+
+  <h3>Content Rules (7 Flags)</h3>
+  <ul>
+    <li><strong>always_include_hotline:</strong> true — Every post must include 1-888-373-7888 or BeFree 233733</li>
+    <li><strong>must_cite_sources:</strong> true — All statistics must have visible source attribution</li>
+    <li><strong>never_identify_survivors:</strong> true — Protect survivor privacy</li>
+    <li><strong>no_sensationalized_imagery:</strong> true — No chains, bound hands, or gratuitous imagery</li>
+    <li><strong>weekly_hope_post:</strong> true — Prevents compassion fatigue</li>
+    <li><strong>avoid_racial_profiling_triggers:</strong> true — Frame signs as observable conditions</li>
+    <li><strong>Post structure:</strong> Required sections (hook, educate, empower, source), 2-5 hashtags</li>
+  </ul>
+
+  <h3>Audience Profiles (6 Personas)</h3>
+  <table><thead><tr><th>Profile</th><th>Tone</th><th>Visual Style</th><th>Focus</th></tr></thead><tbody>
+    <tr><td><strong>college_students</strong></td><td>Direct, social-native</td><td>Dark + neon accent</td><td>Online exploitation, sextortion</td></tr>
+    <tr><td><strong>educators</strong></td><td>Professional, informative</td><td>Warm amber tones</td><td>Classroom awareness, reporting</td></tr>
+    <tr><td><strong>business_owners</strong></td><td>Compliance-focused</td><td>Cool blue-steel</td><td>Supply chain, forced labor</td></tr>
+    <tr><td><strong>parents</strong></td><td>Protective, conversational</td><td>Golden hour warmth</td><td>Online safety, grooming</td></tr>
+    <tr><td><strong>lawmakers</strong></td><td>Formal, policy-oriented</td><td>Desaturated monochrome</td><td>Legislative gaps, reform</td></tr>
+    <tr><td><strong>general_public</strong></td><td>Accessible (default)</td><td>Cinematic teal-orange</td><td>Basic awareness, hotline</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ═══════════════════════ 10. CONFIG ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">10</div><div class="section-name">Configuration &amp; Dependencies</div></div>
+
+  <h3>Python Dependencies (18 Packages)</h3>
+  <table><thead><tr><th>Category</th><th>Package</th><th>Version</th><th>Purpose</th></tr></thead><tbody>
+    <tr><td>Core AI</td><td>langchain-openai</td><td>0.3.14</td><td>OpenAI LLM wrapper</td></tr>
+    <tr><td>Core AI</td><td>langgraph</td><td>0.4.1</td><td>State machine pipeline</td></tr>
+    <tr><td>Core AI</td><td>openai</td><td>1.78.1</td><td>OpenAI SDK</td></tr>
+    <tr><td>Core AI</td><td>google-generativeai</td><td>0.8.5</td><td>Gemini image gen</td></tr>
+    <tr><td>Core AI</td><td>langsmith</td><td>0.3.42</td><td>Tracing / observability</td></tr>
+    <tr><td>Search</td><td>exa_py</td><td>1.9.1</td><td>Neural news search</td></tr>
+    <tr><td>Search</td><td>crawl4ai</td><td>0.5.0</td><td>Async web scraping</td></tr>
+    <tr><td>Search</td><td style="color:var(--orange);">tavily-python</td><td>0.5.0</td><td style="color:var(--orange);">⚠️ UNUSED in codebase</td></tr>
+    <tr><td>Web</td><td>fastapi</td><td>0.115.12</td><td>REST API framework</td></tr>
+    <tr><td>Web</td><td>uvicorn[standard]</td><td>0.34.2</td><td>ASGI server</td></tr>
+    <tr><td>Web</td><td>websockets</td><td>15.0.1</td><td>WebSocket support</td></tr>
+    <tr><td>Data</td><td>sqlmodel</td><td>0.0.24</td><td>ORM + Pydantic models</td></tr>
+    <tr><td>Data</td><td>pydantic</td><td>2.11.2</td><td>Data validation</td></tr>
+    <tr><td>Data</td><td>pyyaml</td><td>6.0.2</td><td>YAML config parsing</td></tr>
+    <tr><td>Image</td><td>pillow</td><td>≥10.4</td><td>Text overlay compositing</td></tr>
+    <tr><td>Schedule</td><td>apscheduler</td><td>3.10.4</td><td>Timed publishing</td></tr>
+    <tr><td>Memory</td><td>chromadb</td><td>0.6.3</td><td>Vector deduplication</td></tr>
+    <tr><td>Util</td><td>python-dotenv</td><td>1.1.0</td><td>Env file loading</td></tr>
+  </tbody></table>
+</section>
+
+<!-- ═══════════════════════ 11. DATA FLOW ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">11</div><div class="section-name">Data Flow — End-to-End Campaign Generation</div></div>
+
+  <div class="diagram no-break">
+    <div class="diagram-title">End-to-End Sequence</div>
+    <div style="font-size:9pt;line-height:2;">
+      <div style="display:flex;gap:8px;align-items:center;"><div class="flow-node fn-navy" style="min-width:80px;">Browser</div><span>→ POST /api/campaign/generate {story_id}</span><span class="flow-node fn-red" style="min-width:60px;">Server</span></div>
+      <div style="padding-left:100px;">↓ Creates Campaign row (status="generating")</div>
+      <div style="display:flex;gap:8px;align-items:center;padding-left:100px;"><span class="flow-node fn-red" style="min-width:60px;">Server</span><span>→ asyncio.to_thread(run_pipeline)</span><span class="flow-node fn-orange" style="min-width:60px;">Pipeline</span></div>
+      <div style="padding-left:100px;">↓ Returns {campaign_id} immediately</div>
+      <div style="padding-left:100px;border-left:3px solid var(--sage);margin:8px 0;padding:8px 12px;background:#f8fcf9;border-radius:0 6px 6px 0;">
+        <strong>Pipeline runs in background:</strong><br>
+        Entry Router → Story Loader (or Trend Analyzer) → Audience Analyzer → Campaign Planner (GPT-4o)<br>
+        → Loop 5×: Writer (3 calls) → Quality Gate → Compliance → Image Gen (GPT + Gemini + Pillow) → Renderer<br>
+        → Batch Review (HITL pause) → Persist 5 Post rows to SQLite
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;"><div class="flow-node fn-navy" style="min-width:80px;">Browser</div><span>← Polls GET /api/campaign/{id} every 5s → renders calendar when posts appear</span></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:4px;"><div class="flow-node fn-navy" style="min-width:80px;">Browser</div><span>← WebSocket events: post_approved, post_edited, batch_approved</span></div>
+    </div>
+  </div>
+
+  <h3>Step-by-Step</h3>
+  <ol style="margin-left:18px;">
+    <li><strong>Initiation:</strong> User clicks "Generate Campaign" or pastes a URL. Frontend sends POST with <code>{story_id}</code> or <code>{manual_url}</code>.</li>
+    <li><strong>Server Processing:</strong> Creates Campaign row (status='generating'), initializes LangGraph state, spawns background thread. Returns campaign_id immediately.</li>
+    <li><strong>Entry Routing:</strong> If <code>story_title</code> is set → <code>story_loader</code> scrapes article (0 LLM calls). Else → <code>trend_analyzer</code> scans Google News RSS.</li>
+    <li><strong>Planning:</strong> Audience Analyzer matches to 1 of 6 profiles. Campaign Planner (GPT-4o) creates 5 content briefs.</li>
+    <li><strong>Generation Loop (×5):</strong> Writer generates caption + 2 variants → Quality Gate scores 0-10 → Compliance Checker validates + auto-fixes → Image Generator builds prompt + generates via Gemini + composites text overlay → Platform Renderer creates 5 platform sizes.</li>
+    <li><strong>Persistence:</strong> Updates Campaign status to 'review', creates 5 Post rows with all data. Audit service logs the event.</li>
+    <li><strong>Human Review:</strong> Reviewer approves/edits/regens posts. Batch approval triggers confetti. Download creates ZIP bundle.</li>
+  </ol>
+</section>
+
+<!-- ═══════════════════════ 12. KNOWN ISSUES ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">12</div><div class="section-name">Known Issues &amp; Observations</div></div>
+
+  <ul>
+    <li><span class="issue-badge badge-warn">WARN</span> <strong>Font Filename Mismatch:</strong> <code>image_generator.py</code> loads <code>PlayfairDisplay[wght].ttf</code> / <code>Roboto[wdth,wght].ttf</code> (variable font names), but actual files are <code>PlayfairDisplay-Bold.ttf</code> / <code>Roboto-Bold.ttf</code>. Falls back to Arial silently — images use wrong fonts.</li>
+    <li><span class="issue-badge badge-warn">WARN</span> <strong>Unused Dependency:</strong> <code>tavily-python==0.5.0</code> in requirements.txt and <code>TAVILY_API_KEY</code> in .env, but never imported anywhere. Can be safely removed.</li>
+    <li><span class="issue-badge badge-warn">WARN</span> <strong>Unused Intel Ranker:</strong> <code>IntelService.__init__()</code> creates a GPT-4o-mini structured output ranker, but <code>scan()</code> never calls it. All stories get <code>relevance_score=50.0</code>. Prepared but unfinished.</li>
+    <li><span class="issue-badge badge-note">NOTE</span> <strong>Stale Project Name:</strong> .env sets <code>LANGCHAIN_PROJECT='Agent-8-Observability'</code> — should be <code>RedM-V3</code>.</li>
+    <li><span class="issue-badge badge-note">NOTE</span> <strong>Stale Document Title:</strong> <code>visual_philosophy.md</code> opens with "Agent-9 Campaign Imagery" — old project name.</li>
+    <li><span class="issue-badge badge-note">NOTE</span> <strong>Empty Tests Directory:</strong> <code>backend/tests/</code> exists but is empty. No automated test coverage.</li>
+    <li><span class="issue-badge badge-note">NOTE</span> <strong>Publisher Not in Pipeline:</strong> <code>PublisherAgent</code> exists but is NOT a node in the LangGraph graph. Available for manual use only.</li>
+    <li><span class="issue-badge badge-note">NOTE</span> <strong>ChromaDB Not Wired:</strong> <code>ContentMemory</code> implements dedup with ChromaDB, but neither <code>check_duplicate()</code> nor <code>store()</code> is called by any pipeline node. Built but not connected.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════ 13. STATS ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-title"><div class="section-number">13</div><div class="section-name">Stats Summary</div></div>
+
+  <div class="stats-grid">
+    <div>
+      <div class="stat-row"><span>Total Python source files</span><span class="stat-value">22</span></div>
+      <div class="stat-row"><span>Total HTML files</span><span class="stat-value">3</span></div>
+      <div class="stat-row"><span>Total config files</span><span class="stat-value">3 + 3 fonts</span></div>
+      <div class="stat-row"><span>Lines of Python code</span><span class="stat-value">~2,800</span></div>
+      <div class="stat-row"><span>Lines of HTML/CSS/JS</span><span class="stat-value">~3,055</span></div>
+      <div class="stat-row"><span>REST API endpoints</span><span class="stat-value">19 + 1 WS</span></div>
+      <div class="stat-row"><span>Pipeline nodes</span><span class="stat-value">12</span></div>
+      <div class="stat-row"><span>AI agent classes</span><span class="stat-value">8</span></div>
+      <div class="stat-row"><span>Service classes</span><span class="stat-value">7</span></div>
+      <div class="stat-row"><span>Tool classes</span><span class="stat-value">5</span></div>
+      <div class="stat-row"><span>Database tables</span><span class="stat-value">6</span></div>
+    </div>
+    <div>
+      <div class="stat-row"><span>LLM models used</span><span class="stat-value">3</span></div>
+      <div class="stat-row"><span>LLM calls per campaign</span><span class="stat-value">~43-48</span></div>
+      <div class="stat-row"><span>Content types</span><span class="stat-value">5</span></div>
+      <div class="stat-row"><span>Platform renders per post</span><span class="stat-value">5</span></div>
+      <div class="stat-row"><span>Audience profiles</span><span class="stat-value">6</span></div>
+      <div class="stat-row"><span>Language rules</span><span class="stat-value">6 (all enabled)</span></div>
+      <div class="stat-row"><span>Content rules</span><span class="stat-value">7 (all active)</span></div>
+      <div class="stat-row"><span>Supported languages</span><span class="stat-value">4 (EN/ES/FR/PT)</span></div>
+      <div class="stat-row"><span>Trusted news domains</span><span class="stat-value">13</span></div>
+      <div class="stat-row"><span>Generated output assets</span><span class="stat-value">169 files</span></div>
+      <div class="stat-row"><span>Python dependencies</span><span class="stat-value">18 (1 unused)</span></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;padding:20px;border-top:2px solid var(--light);">
+    <div style="font-family:'Playfair Display',serif;font-size:16pt;color:var(--navy);font-weight:700;">— End of Document —</div>
+    <div style="font-size:9pt;color:var(--gray);margin-top:6px;">National Human Trafficking Hotline: 1-888-373-7888 &nbsp;|&nbsp; Text BeFree to 233733</div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RedM Command Center V3 — Presentation Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&family=JetBrains+Mono:wght@400&display=swap');
+
+  :root {
+    --red: #AD1F24;
+    --navy: #1B2A4A;
+    --sage: #4A7C59;
+    --orange: #D4722A;
+    --dark: #2a2a35;
+    --gray: #64646e;
+    --light: #f0f0f5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; color: var(--dark); line-height: 1.7; font-size: 10pt; background: #fff; }
+
+  @media print {
+    body { font-size: 9.5pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    @page { margin: 16mm 14mm; size: A4; }
+    .cover { page-break-after: always; }
+  }
+  @media screen {
+    body { max-width: 210mm; margin: 0 auto; background: #e8e8ee; }
+    section { background: #fff; padding: 30px 40px; margin-bottom: 4px; }
+    .cover { margin-bottom: 4px; }
+    .page-break { border-top: 2px dashed #ccc; margin-top: 30px; padding-top: 30px; }
+  }
+
+  /* Cover */
+  .cover {
+    background: linear-gradient(135deg, var(--navy) 0%, #0f1a30 100%);
+    color: white;
+    padding: 60px 50px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .cover h1 { font-family: 'Playfair Display', serif; font-size: 36pt; line-height: 1.15; }
+  .cover .subtitle { font-size: 14pt; color: #8899bb; margin-top: 10px; }
+  .cover .desc { font-size: 10.5pt; color: #6677aa; margin-top: 30px; max-width: 480px; line-height: 1.8; }
+  .cover .meta { margin-top: 50px; font-size: 9.5pt; }
+  .cover .meta div { display: flex; margin-bottom: 4px; }
+  .cover .meta span:first-child { color: #6677aa; width: 100px; font-weight: 600; }
+  .cover .meta span:last-child { color: #99aacc; }
+  .cover-bar { position: absolute; left: 40px; top: 50%; transform: translateY(-50%); width: 5px; height: 180px; background: var(--red); border-radius: 3px; }
+  .cover-footer { position: absolute; bottom: 0; left: 0; right: 0; background: var(--red); padding: 12px; text-align: center; font-size: 8.5pt; font-weight: 600; }
+
+  /* Section headers */
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px; padding-bottom: 10px;
+    border-bottom: 2px solid var(--light);
+  }
+  .section-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .section-name { font-family: 'Playfair Display', serif; font-size: 18pt; color: var(--navy); }
+
+  h3 { font-size: 12pt; color: var(--navy); margin: 20px 0 8px; font-weight: 700; }
+  h4 { font-size: 10.5pt; color: var(--dark); margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 8px; }
+  ul, ol { margin: 6px 0 12px 18px; }
+  li { margin-bottom: 4px; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 9pt; }
+  thead th {
+    background: var(--navy); color: white; padding: 7px 10px;
+    text-align: left; font-weight: 600; font-size: 8.5pt;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  tbody td { padding: 6px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  tbody tr:nth-child(even) { background: #f8f8fb; }
+
+  /* Script blocks */
+  .script-block {
+    background: #f4f6fa;
+    border-left: 4px solid var(--navy);
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+    line-height: 1.7;
+    font-style: italic;
+    color: #333;
+  }
+  .script-block strong { font-style: normal; color: var(--navy); }
+
+  /* Action blocks */
+  .action-block {
+    background: #f2f8f4;
+    border-left: 4px solid var(--sage);
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 9pt;
+  }
+  .action-label { font-weight: 700; color: var(--sage); font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+  /* Time badge */
+  .time-badge {
+    display: inline-block;
+    background: var(--red);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* Tab badge */
+  .tab-badge {
+    display: inline-block;
+    background: var(--navy);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 8pt;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  /* Tip boxes */
+  .tip-box {
+    background: #fff8f0;
+    border: 1px solid #f0d4b0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 9pt;
+  }
+  .tip-box .tip-label { font-weight: 700; color: var(--orange); font-size: 8pt; text-transform: uppercase; margin-bottom: 4px; }
+
+  /* Checklist */
+  .checklist { list-style: none; margin-left: 0; }
+  .checklist li { padding: 4px 0; }
+  .checklist li::before { content: '☐ '; font-size: 12pt; color: var(--sage); margin-right: 4px; }
+
+  /* FAQ */
+  .faq-q { font-weight: 700; color: var(--navy); }
+  .faq-a { margin-bottom: 12px; padding-left: 12px; border-left: 2px solid var(--light); }
+
+  code { font-family: 'JetBrains Mono', monospace; background: #f0f0f5; padding: 1px 5px; border-radius: 3px; font-size: 8.5pt; color: var(--red); }
+
+  /* Bottom reminders */
+  .reminder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .reminder-card {
+    padding: 12px 14px; border-radius: 8px; font-size: 9pt;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ COVER ═══════════════════════ -->
+<div class="cover" style="position:relative;">
+  <div class="cover-bar"></div>
+  <div style="margin-left:20px;">
+    <h1>5-Minute<br>Presentation Guide</h1>
+    <div class="subtitle">RedM Command Center V3 — Live UI Demo</div>
+    <div class="desc">
+      A timed script for presenting the AI-powered anti-trafficking 
+      campaign generator to RedM stakeholders. Includes exact dialogue, 
+      screen actions, navigation order, and anticipated Q&A.
+    </div>
+    <div class="meta">
+      <div><span>Audience</span><span>RedM Stakeholders</span></div>
+      <div><span>Format</span><span>Live browser demo (design_v3.html)</span></div>
+      <div><span>Duration</span><span>5 minutes</span></div>
+      <div><span>Date</span><span>April 19, 2026</span></div>
+    </div>
+  </div>
+  <div class="cover-footer">National Human Trafficking Hotline: 1-888-373-7888 &nbsp;|&nbsp; Text BeFree to 233733</div>
+</div>
+
+<!-- ═══════════════════════ SETUP ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-header">
+    <div class="section-icon" style="background:#f4f6fa;">⚙️</div>
+    <div class="section-name">Before You Start</div>
+  </div>
+
+  <h3>Setup Checklist</h3>
+  <ul class="checklist">
+    <li>Open <code>design_v3.html</code> in Chrome (full screen — <strong>F11</strong>)</li>
+    <li>Ensure <strong>Light mode</strong> is selected (better for projectors)</li>
+    <li>If you want a live scan: run backend (<code>cd backend && python server.py</code>)</li>
+    <li>If backend is NOT running, the static UI still shows all demo data — skip live scan</li>
+    <li>Test your screen sharing / projector connection</li>
+    <li>Have this guide printed or on a second screen</li>
+  </ul>
+
+  <div class="tip-box no-break">
+    <div class="tip-label">💡 Delivery Tips</div>
+    <ul style="margin-bottom:0;">
+      <li>Speak <strong>slowly and confidently</strong> — 5 minutes is plenty of time</li>
+      <li><strong>Point at the screen</strong> when mentioning specific elements</li>
+      <li>Don't read captions word-for-word — <strong>summarize</strong> what they say</li>
+      <li>End with the hotline number — it <strong>grounds the mission</strong></li>
+      <li>The <strong>Calendar is the star</strong> — spend the most time there</li>
+    </ul>
+  </div>
+
+  <h3>Navigation Order (Quick Reference)</h3>
+  <table>
+    <thead><tr><th>Time</th><th>Tab</th><th>Duration</th><th>What to Show</th></tr></thead>
+    <tbody>
+      <tr><td><code>0:00</code></td><td>Onboarding</td><td>30 sec</td><td>State the problem + one-sentence pitch</td></tr>
+      <tr><td><code>0:30</code></td><td><strong>Intelligence</strong></td><td>45 sec</td><td>Scan + story cards + "Generate Campaign"</td></tr>
+      <tr><td><code>1:15</code></td><td><strong>Calendar ⭐</strong></td><td>75 sec</td><td>5-day grid + carousel + captions</td></tr>
+      <tr><td><code>2:30</code></td><td><strong>Calendar</strong></td><td>45 sec</td><td>Approve / Edit / Regen flow</td></tr>
+      <tr><td><code>3:15</code></td><td><strong>Rules</strong></td><td>45 sec</td><td>3-tier compliance system</td></tr>
+      <tr><td><code>4:00</code></td><td>Impact → Library</td><td>30 sec</td><td>KPIs + past campaigns</td></tr>
+      <tr><td><code>4:30</code></td><td>—</td><td>30 sec</td><td>Closing statement + hotline</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════ SEGMENT 1 ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fde8e8;">🎬</div>
+    <div class="section-name">The Script</div>
+  </div>
+
+  <!-- OPENING -->
+  <h3><span class="time-badge">0:00 – 0:30</span> Opening — The Problem</h3>
+  <p><span class="tab-badge">ONBOARDING</span> Stay on the welcome overlay or Calendar view</p>
+
+  <div class="script-block">
+    "This is the <strong>RedM Command Center</strong> — an AI-powered tool we built to solve a real problem: anti-trafficking organizations need to post consistent, ethical social media content, but they're understaffed and stretched thin.<br><br>
+    This system takes a <strong>single news story</strong> and automatically generates a <strong>full week of social media content</strong> — 5 posts, each with captions, AI-generated images, and compliance checks — ready for human review in under 3 minutes."
+  </div>
+
+  <div class="action-block">
+    <div class="action-label">🖱️ Screen Action</div>
+    If the onboarding overlay shows, click <strong>"Get Started"</strong> through all 3 steps — they explain the workflow. Then dismiss.
+  </div>
+
+  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
+
+  <!-- INTELLIGENCE -->
+  <h3><span class="time-badge">0:30 – 1:15</span> Intelligence Feed</h3>
+  <p><span class="tab-badge">INTELLIGENCE</span> Click "Intelligence" in the sidebar</p>
+
+  <div class="script-block">
+    "Everything starts here — the <strong>Intelligence Feed</strong>. The system scans 12 trusted news sources — Reuters, AP, BBC, Polaris Project, the DOJ — for breaking human trafficking stories.<br><br>
+    Each story is ranked and displayed as a card. The team picks the most relevant one and clicks <strong>'Generate Campaign'</strong>. That's it — one click triggers the entire AI pipeline."
+  </div>
+
+  <div class="action-block">
+    <div class="action-label">🖱️ Point Out</div>
+    <ul style="margin:0;">
+      <li>The <strong>"Scan Now"</strong> button at the top</li>
+      <li>The <strong>AI Pick</strong> badge on the top story</li>
+      <li>The <strong>"Generate Campaign"</strong> button on any story card</li>
+      <li>The <strong>Manual URL</strong> input — "They can also paste any article URL directly"</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SEGMENT 2 ═══════════════════════ -->
+<section class="page-break">
+  <!-- CALENDAR -->
+  <h3><span class="time-badge">1:15 – 2:30</span> Content Calendar ⭐ THE MAIN EVENT</h3>
+  <p><span class="tab-badge">CALENDAR</span> Click "Calendar" in the sidebar</p>
+
+  <div class="script-block">
+    "This is the heart of the system — the <strong>Content Calendar</strong>. From one news story, the AI generates 5 posts for the week, each with a different purpose:"
+  </div>
+
+  <p><strong>Point at each day column as you say:</strong></p>
+
+  <table>
+    <thead><tr><th>Day</th><th>Type</th><th>What to Say</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Monday</strong></td><td style="color:var(--red);font-weight:600;">Reactive</td><td>"The breaking news hook. Gets immediate attention."</td></tr>
+      <tr><td><strong>Tuesday</strong></td><td style="color:#3B82F6;font-weight:600;">Stat Card</td><td>"A key data point from the story — builds credibility."</td></tr>
+      <tr><td><strong>Wednesday</strong></td><td style="color:#8B5CF6;font-weight:600;">Explainer</td><td>"Educational deep-dive — what does this mean?"</td></tr>
+      <tr><td><strong>Thursday</strong></td><td style="color:var(--orange);font-weight:600;">Action</td><td>"A direct call to action — call the hotline, report suspicious activity."</td></tr>
+      <tr><td><strong>Friday</strong></td><td style="color:var(--sage);font-weight:600;">Hope</td><td>"A positive progress story — prevents compassion fatigue."</td></tr>
+    </tbody>
+  </table>
+
+  <div class="script-block">
+    "Every post has an <strong>AI-generated image</strong> tailored to the audience, a <strong>quality score</strong> from our AI judge, and a <strong>compliance badge</strong> confirming it meets ethical standards."
+  </div>
+
+  <div class="action-block">
+    <div class="action-label">🖱️ Demo Actions (do these in order)</div>
+    <ol style="margin:0;">
+      <li><strong>Click on a post image</strong> → Carousel Modal opens — "This is the review view"</li>
+      <li>Show the headline, caption, quality score, compliance badge</li>
+      <li>Click <strong>→</strong> to navigate to the next post</li>
+      <li>Close the carousel (<strong>×</strong> or <strong>Esc</strong>)</li>
+      <li>Click <strong>"Caption"</strong> on any post to expand the full text</li>
+      <li>Point out the <strong>character counts</strong> — "IG: /2200, X: /280"</li>
+    </ol>
+  </div>
+
+  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
+
+  <!-- APPROVE -->
+  <h3><span class="time-badge">2:30 – 3:15</span> Approve &amp; Edit Flow</h3>
+  <p><span class="tab-badge">CALENDAR</span> Stay on Calendar view</p>
+
+  <div class="script-block">
+    "The system is <strong>human-in-the-loop</strong> — nothing publishes without approval. The reviewer can:<br><br>
+    • <strong>Approve</strong> each post individually<br>
+    • <strong>Edit</strong> any caption directly<br>
+    • <strong>Regenerate</strong> an image with custom instructions<br>
+    • Or <strong>batch-approve all 5</strong> with one click"
+  </div>
+
+  <div class="action-block">
+    <div class="action-label">🖱️ Demo Actions</div>
+    <ol style="margin:0;">
+      <li>Point at the <strong>"Approve"</strong> button on a post</li>
+      <li>Point at the <strong>"Approve All 5 Posts"</strong> button (top right)</li>
+      <li>Click <strong>"Edit"</strong> on one post → show the edit modal → click <strong>Cancel</strong></li>
+    </ol>
+  </div>
+
+  <div class="script-block">
+    "Once approved, they can <strong>download the entire campaign as a ZIP</strong> or <strong>translate it</strong> to Spanish, French, or Portuguese — one click."
+  </div>
+
+  <div class="action-block">
+    <div class="action-label">🖱️ Point At</div>
+    The <strong>Download</strong> and <strong>Translate</strong> buttons in the top action bar.
+  </div>
+</section>
+
+<!-- ═══════════════════════ SEGMENT 3 ═══════════════════════ -->
+<section class="page-break">
+  <!-- RULES -->
+  <h3><span class="time-badge">3:15 – 4:00</span> Content Rules — The Differentiator</h3>
+  <p><span class="tab-badge">RULES</span> Click "Rules" in the sidebar</p>
+
+  <div class="script-block">
+    "This is what makes this system different from generic AI tools. We built in <strong>ethical guardrails</strong> — a rules engine that every piece of content must pass through."
+  </div>
+
+  <p><strong>Point at each tier as you explain:</strong></p>
+
+  <table>
+    <thead><tr><th>Tier</th><th>Color</th><th>What to Say</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Legal &amp; Compliance</strong></td><td style="color:var(--red);font-weight:600;">Red (locked)</td><td>"These are locked — can't disable them. Never identify survivors. Always cite sources."</td></tr>
+      <tr><td><strong>Ethical Language</strong></td><td style="color:var(--orange);font-weight:600;">Orange</td><td>"The system automatically replaces harmful terms. For example, it won't say 'rescued' — it says 'identified', because 'rescued' implies the survivor lacked agency."</td></tr>
+      <tr><td><strong>Brand Voice</strong></td><td style="color:var(--gray);font-weight:600;">Gray</td><td>"Customizable rules — 'no sensationalized imagery', 'at least one hope post per week.'"</td></tr>
+    </tbody>
+  </table>
+
+  <div class="script-block">
+    "The compliance checker runs <strong>both</strong> a regex-based quick check and an AI deep analysis. If it finds a violation, it <strong>auto-fixes it</strong> before the human even sees it."
+  </div>
+
+  <div class="action-block">
+    <div class="action-label">🖱️ Point At</div>
+    The <strong>98% compliance score</strong> bar at the top of the Rules page.
+  </div>
+
+  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
+
+  <!-- IMPACT + LIBRARY -->
+  <h3><span class="time-badge">4:00 – 4:30</span> Impact &amp; Library (Quick)</h3>
+
+  <p><span class="tab-badge">IMPACT</span> Click "Impact" — stay for 10 seconds</p>
+  <div class="script-block">"The Impact page tracks reach, engagement, hotline clicks, and API costs per campaign."</div>
+
+  <p><span class="tab-badge">LIBRARY</span> Click "Library" — stay for 15 seconds</p>
+  <div class="script-block">"And the Content Library stores every campaign ever generated — with thumbnails. Click any past campaign to reload it into the calendar."</div>
+
+  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
+
+  <!-- CLOSING -->
+  <h3><span class="time-badge">4:30 – 5:00</span> Closing</h3>
+
+  <div class="script-block">
+    "To summarize: <strong>one news story in, five platform-ready posts out</strong> — each written, illustrated, scored, and compliance-checked by AI, with full human control.<br><br>
+    The system uses <strong>GPT-4o for strategic planning</strong>, <strong>GPT-4o-mini for writing and quality</strong>, and <strong>Google Gemini for image generation</strong>. Everything is logged, auditable, and translatable.<br><br>
+    We built this so a team of <strong>2-3 volunteers</strong> can produce what used to take a social media agency a full week."
+  </div>
+
+  <div class="script-block" style="border-color:var(--red);background:#fdf4f4;">
+    <strong style="color:var(--red);">Final beat — point at the sidebar:</strong><br><br>
+    "And that number at the bottom — <strong>1-888-373-7888</strong> — that's the National Human Trafficking Hotline. Every single post we generate includes it. That's why we built this."
+  </div>
+</section>
+
+<!-- ═══════════════════════ ROADMAP ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-header">
+    <div class="section-icon" style="background:#e8f4ec;">🚀</div>
+    <div class="section-name">With Continued Support</div>
+  </div>
+
+  <p>What you've seen today is the <strong>working MVP</strong>. With continued support, here is what the next phase of development unlocks — each item directly multiplies the system's impact and operational maturity.</p>
+
+  <!-- 1. SECURITY -->
+  <h3>🔒 1. Agent Security & Data Protection</h3>
+  <p><em>Current state:</em> API keys stored in .env, open CORS, no authentication layer.</p>
+  <table>
+    <thead><tr><th>Enhancement</th><th>What It Means</th></tr></thead>
+    <tbody>
+      <tr><td><strong>LLM Prompt Hardening</strong></td><td>Injection guards and output sanitization to prevent adversarial manipulation of AI-generated content — critical for a system producing public-facing material about vulnerable populations.</td></tr>
+      <tr><td><strong>Role-Based Access Control</strong></td><td>Separate Creator, Reviewer, and Admin roles with JWT authentication. Only Admins can modify compliance rules; Reviewers can approve; Creators can generate.</td></tr>
+      <tr><td><strong>API Key Vault</strong></td><td>Migrate from .env files to a secrets manager (AWS Secrets Manager or Azure Key Vault) with key rotation and access logging.</td></tr>
+      <tr><td><strong>Rate Limiting & Abuse Prevention</strong></td><td>Per-user generation limits, IP-based throttling, and anomaly alerts to prevent API cost runaway.</td></tr>
+      <tr><td><strong>Audit Encryption</strong></td><td>End-to-end encryption of the audit trail database. Ensure compliance with data protection regulations for sensitive trafficking intelligence.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 2. CONTENT QUALITY -->
+  <h3>🎨 2. Sophisticated Content & Higher-Quality Images</h3>
+  <p><em>Current state:</em> Gemini 3.1 Flash for images, basic Pillow text overlay, 3 font files.</p>
+  <table>
+    <thead><tr><th>Enhancement</th><th>What It Means</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Premium Image Models</strong></td><td>Upgrade to DALL-E 3, Midjourney API, or Gemini 2.0 Pro for photorealistic, publication-quality imagery with better composition and lighting.</td></tr>
+      <tr><td><strong>Brand Template System</strong></td><td>Pre-designed templates with RedM logo placement, consistent typography, gradient overlays, and watermarks — replacing the current basic Pillow compositing.</td></tr>
+      <tr><td><strong>Video Content Generation</strong></td><td>Extend from static images to short-form video content (15s Reels/TikToks) using AI video models — the highest-engagement format on modern platforms.</td></tr>
+      <tr><td><strong>Multi-Story Campaigns</strong></td><td>Generate campaigns that weave multiple news stories into a unified narrative arc, rather than one-story-per-week.</td></tr>
+      <tr><td><strong>A/B Testing Built In</strong></td><td>The PromptRegistry already tracks quality scores. Wire it to automatically rotate high-performing prompts and caption styles based on real engagement data.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 3. MONITORING -->
+  <h3>📊 3. Post-Publish Monitoring & Analytics</h3>
+  <p><em>Current state:</em> Impact page shows placeholder KPIs; no live social media data.</p>
+  <table>
+    <thead><tr><th>Enhancement</th><th>What It Means</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Live Social Media Integration</strong></td><td>Connect Instagram Graph API, X API v2, LinkedIn Marketing API, and Facebook Pages API to pull real-time impressions, likes, shares, saves, and comments.</td></tr>
+      <tr><td><strong>Hotline Click Attribution</strong></td><td>UTM-tagged links in every post. Track exactly how many hotline visits and calls were generated by each campaign — the most important metric.</td></tr>
+      <tr><td><strong>Sentiment Analysis Dashboard</strong></td><td>AI-powered comment monitoring. Detect negative reactions, misinformation in replies, or requests for help — with automated escalation alerts.</td></tr>
+      <tr><td><strong>Content Performance Feedback Loop</strong></td><td>Feed engagement data back into the Campaign Planner so the AI learns which angles, tones, and content types perform best with each audience profile.</td></tr>
+      <tr><td><strong>Weekly Report Generation</strong></td><td>Automated PDF performance reports for stakeholders — reach, engagement, cost-per-impression, and hotline attribution — sent every Monday.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 4. COST -->
+  <h3>💰 4. Operational Cost Optimization</h3>
+  <p><em>Current state:</em> ~$0.05-0.15 per campaign (43-48 LLM calls). Gemini images are on free tier.</p>
+  <table>
+    <thead><tr><th>Enhancement</th><th>Impact</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Intelligent Caching</strong></td><td>Cache common LLM responses (audience matching, compliance checks for similar content). Could reduce LLM calls by 30-40% for recurring topics.</td></tr>
+      <tr><td><strong>Model Routing Optimization</strong></td><td>Move simple tasks (hashtag generation, character counting) to local models or rule-based logic. Reserve GPT-4o for planning only.</td></tr>
+      <tr><td><strong>Batch API Calls</strong></td><td>Use OpenAI's Batch API (50% cost reduction) for non-urgent tasks like quality scoring and compliance checking.</td></tr>
+      <tr><td><strong>Cost Budget Alerts</strong></td><td>Set monthly spending caps with email/Slack alerts at 50%, 80%, and 100% thresholds.</td></tr>
+      <tr><td><strong>Monthly Cost Projection</strong></td><td>At current rates: 4 campaigns/month = ~$0.40-0.60/month in AI costs. At scale (20 campaigns/month) ≈ $2-3/month. Infrastructure (hosting) adds ~$5-10/month for a basic cloud deployment.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 5. DIRECT PUBLISHING -->
+  <h3>📱 5. Direct Social Media Publishing</h3>
+  <p><em>Current state:</em> ZIP download only. No API-level publishing.</p>
+  <table>
+    <thead><tr><th>Enhancement</th><th>What It Means</th></tr></thead>
+    <tbody>
+      <tr><td><strong>One-Click Publish</strong></td><td>After human approval, publish directly to Instagram, X, LinkedIn, and Facebook via their official APIs — no manual copy-paste.</td></tr>
+      <tr><td><strong>Scheduled Publishing</strong></td><td>The APScheduler infrastructure already exists. Wire it to platform APIs for time-optimized posting (best engagement windows per platform).</td></tr>
+      <tr><td><strong>Cross-Platform Adaptation</strong></td><td>Automatically adjust caption length, hashtag count, and image format per platform's algorithm preferences.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Summary -->
+  <div class="tip-box no-break" style="margin-top:20px;">
+    <div class="tip-label">📋 Estimated Timeline with Support</div>
+    <table style="margin:0;">
+      <thead><tr><th>Phase</th><th>Duration</th><th>Deliverables</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Phase 1</strong></td><td>2-3 weeks</td><td>Security layer (auth, RBAC, key vault) + font fix + direct publishing MVP</td></tr>
+        <tr><td><strong>Phase 2</strong></td><td>3-4 weeks</td><td>Premium images + brand templates + monitoring dashboard + live API connections</td></tr>
+        <tr><td><strong>Phase 3</strong></td><td>4-6 weeks</td><td>Video content + feedback loop + cost optimization + weekly reports</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FAQ ═══════════════════════ -->
+<section class="page-break">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fdf0e4;">❓</div>
+    <div class="section-name">If They Ask Questions</div>
+  </div>
+
+  <table>
+    <thead><tr><th style="width:35%;">Question</th><th>Your Answer</th></tr></thead>
+    <tbody>
+      <tr><td class="faq-q">"How long does generation take?"</td><td>"About 2-3 minutes for all 5 posts with images."</td></tr>
+      <tr><td class="faq-q">"What if the AI writes something wrong?"</td><td>"Every post passes through a Quality Gate (scores 0-10) and a Compliance Checker that auto-fixes banned terms. Nothing publishes without human approval."</td></tr>
+      <tr><td class="faq-q">"Can we customize the rules?"</td><td>"Yes — the Brand Voice tier is fully editable. Ethical language rules are toggleable. Legal rules are locked by design."</td></tr>
+      <tr><td class="faq-q">"What AI models does it use?"</td><td>"GPT-4o for campaign planning, GPT-4o-mini for writing and quality checks, and Google Gemini for image generation."</td></tr>
+      <tr><td class="faq-q">"How much does it cost per campaign?"</td><td>"Roughly $0.05–0.15 per campaign. At scale, 20 campaigns/month costs about $2-3 in AI. Hosting adds ~$5-10/month."</td></tr>
+      <tr><td class="faq-q">"Can it post directly to social media?"</td><td>"Not yet — currently ZIP downloads. Direct API publishing is the first item in Phase 1 of our roadmap."</td></tr>
+      <tr><td class="faq-q">"What languages does it support?"</td><td>"English, Spanish, French, and Portuguese. One-click translation from the calendar view."</td></tr>
+      <tr><td class="faq-q">"What news sources does it scan?"</td><td>"12 trusted domains: Reuters, AP, BBC, The Guardian, Al Jazeera, UNODC, Polaris Project, Human Rights Watch, IJM, ILO, and Thorn."</td></tr>
+      <tr><td class="faq-q">"Is the system secure?"</td><td>"The MVP runs locally. Our Phase 1 roadmap adds JWT auth, role-based access control, and a secrets vault before any cloud deployment."</td></tr>
+      <tr><td class="faq-q">"How do we measure real impact?"</td><td>"Phase 2 adds live social API connections and UTM-tagged hotline links — we'll track exactly how many calls each campaign generates."</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Remember</h3>
+
+  <div class="reminder-grid">
+    <div class="reminder-card" style="background:#fde8e8;border:1.5px solid #f5c6c6;">
+      <strong style="color:var(--red);">🔴 Start Strong</strong><br>
+      Lead with the problem, not the tech
+    </div>
+    <div class="reminder-card" style="background:#e8ecf4;border:1.5px solid #c8cfdd;">
+      <strong style="color:var(--navy);">🎯 Calendar is the Star</strong><br>
+      Spend the most time there (75 sec)
+    </div>
+    <div class="reminder-card" style="background:#fdf0e4;border:1.5px solid #f0d4b0;">
+      <strong style="color:var(--orange);">🛡️ Emphasize Ethics</strong><br>
+      The Rules page is your differentiator
+    </div>
+    <div class="reminder-card" style="background:#e8f4ec;border:1.5px solid #b8d4c0;">
+      <strong style="color:var(--sage);">🚀 Close with the Roadmap</strong><br>
+      Show what's possible with support
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;padding-top:20px;border-top:2px solid var(--light);">
+    <div style="font-family:'Playfair Display',serif;font-size:14pt;color:var(--navy);">Good luck! 🎤</div>
+    <div style="font-size:8.5pt;color:var(--gray);margin-top:6px;">1-888-373-7888 &nbsp;|&nbsp; Text BeFree to 233733</div>
+  </div>
+</section>
+
+</body>
+</html>
