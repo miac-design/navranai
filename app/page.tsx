@@ -6,18 +6,24 @@ import Mission from "@/components/Mission";
 import BuiltBy from "@/components/BuiltBy";
 import Footer from "@/components/Footer";
 import Cursor from "@/components/Cursor";
+import Nav from "@/components/Nav";
 
 export default function Home() {
   return (
     <main className="relative">
       <Cursor />
+      <Nav variant="dawn" />
       <Hero />
       <Problem />
       <WhatWeDo />
       <Articles />
-      <Mission />
+      <section id="mission">
+        <Mission />
+      </section>
       <BuiltBy />
-      <Footer />
+      <section id="subscribe">
+        <Footer />
+      </section>
     </main>
   );
 }
